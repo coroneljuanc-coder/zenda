@@ -31,6 +31,14 @@ npm run dev
 | `npm run typecheck` | Revisa los tipos de TypeScript.                                                         |
 | `npm run build`     | Compila las aplicaciones.                                                               |
 | `npm run format`    | Da formato al código con Prettier.                                                      |
+| `npm test`          | Pruebas unitarias y de integración (Vitest).                                            |
+| `npm run test:e2e`  | Pruebas de punta a punta en celular y escritorio (Playwright).                          |
+
+La primera vez, instala el navegador de pruebas con `npx playwright install chromium`.
+
+## Integración continua
+
+Cada pull request hacia `main` ejecuta el check **CI** en GitHub Actions: formato, lint, tipos, pruebas unitarias, compilación y pruebas E2E. Si el check queda en rojo, el pull request no se puede integrar. Solo se prueba la aplicación que cambió; si cambia algo compartido, se prueban ambas.
 
 ## Reglas del repositorio
 
