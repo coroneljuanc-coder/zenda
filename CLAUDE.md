@@ -155,7 +155,7 @@ Construcción incremental: primero un MVP (catálogo, carrito y compra) y luego 
 - D4 Precio mostrado = precio final con IVA incluido.
 - D5 Variantes modeladas desde el Sprint 0; el selector de talla y color es "Should".
 - D6 Productos del MVP cargados por seed (sin panel de administración).
-- D7 Logo de texto "Zenda" y paleta sobria que el PO aprueba.
+- D7 Logo de texto "Zenda" y paleta sobria que el PO aprueba. Concretada el 2026-11-16 (ZTV-33): dirección «Vitrina», con blanco y negro (#111111), gris #5A5A5A, superficie #F2F2F2 y lima #C8F169 solo para «Nuevo»; esquinas rectas, sin sombras ni degradados; letra Archivo; logo «zenda» en minúscula; texto base de 17 px por el público de 18 a 70 años. El PO descartó las primeras opciones porque «se veían hechas por IA»: evitar patrones genéricos (crema y terracota, degradados, tarjetas redondeadas con sombra). Tokens en `apps/tienda/src/app/globals.css`.
 - D8 (2026-11-16) Producción muestra los 21 productos de ejemplo hasta que lleguen los reales. Se cargan en la compilación de producción con `ZENDA_SEED_PRODUCCION=1`, una variable de Vercel solo para Production. Pendiente de confirmar con el PO: el aviso visible «Tienda en construcción: productos de ejemplo» (se decide en la planeación del Sprint 1, ZTV-10).
 - D9 (2026-11-16) Versiones del producto, una por sprint: v0.1.0 Fundaciones (Sprint 0), v0.2.0 Catálogo, v0.3.0 Carrito, v0.4.0 Pago y v1.0.0 MVP. Las correcciones urgentes en producción salen como vX.Y.1. En Jira, cada historia lleva su versión ("fixVersion") y la versión se publica al cerrar el sprint.
 
