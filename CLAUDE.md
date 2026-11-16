@@ -153,6 +153,11 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 - Historias derivadas aprobadas y registradas (2026-11-15): ZTV-24 (repositorio con dos aplicaciones, Sprint 0) y ZTV-25 (evento "pedido pagado", Sprint 4); ZTV-21 y ZTV-23 ajustadas. Detalle: `docs/backlog/05-ajustes-arquitectura-c.md`.
 - Para empezar a escribir código falta la aprobación del Sprint 0 por el PO (DoR) y sus requisitos de entrada (Git y cuentas de GitHub, Vercel y Neon).
 
+## Repositorio (GitHub)
+- Repositorio **público** `coroneljuanc-coder/zenda` (decisión del PO 2026-11-15: GitHub Free solo protege ramas en repositorios públicos). Nunca se suben credenciales.
+- `main` protegida: solo recibe cambios por pull request, también para administradores; sin force push ni borrado. El check "CI" se vuelve obligatorio al terminar ZTV-6.
+- Ramas `tipo/ZTV-##-descripcion`; el PO revisa e integra cada pull request.
+
 ## Configuración de Jira (proyecto ZTV, team-managed)
 - Clave `ZTV`. Tablero: Por hacer → En curso → En pruebas → Listo.
 - Prioridad MoSCoW en campo personalizado "MoSCoW" (Historia: `customfield_10043`; Error: `customfield_10044`). Puntos: "Story point estimate".

@@ -46,7 +46,7 @@ Escenario 3: Código con errores de tipos o de estilo (error)
 - RN3: Las ramas siguen la convención `tipo/ID-descripcion` (ejemplo: `feat/ZTV-12-listado-productos`).
 
 ### Requisitos no funcionales
-- Seguridad: repositorio privado mientras aprendemos.
+- Seguridad: repositorio público (decisión del PO, 2026-11-15: GitHub Free solo permite proteger ramas en repositorios públicos). Nunca se suben credenciales: `.gitignore` excluye `.env*` y se revisa en cada pull request.
 - Rendimiento, accesibilidad y responsive: No aplica (no hay interfaz de cliente todavía).
 
 ### Diseño / Interfaz
