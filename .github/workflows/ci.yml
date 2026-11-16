@@ -22,6 +22,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10 # RN3 de ZTV-6: el CI debe tardar menos de 10 minutos
 
+    # ZTV-7 (RN5): base de datos solo para pruebas. Es un PostgreSQL temporal que nace y muere con
+    # cada ejecución; no usa credenciales reales ni toca las bases de Neon.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: zenda
+          POSTGRES_PASSWORD: zenda
+          POSTGRES_DB: zenda_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U zenda -d zenda_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://zenda:zenda@localhost:5432/zenda_ci
+
     steps:
       - name: Descargar el código
         uses: actions/checkout@v7
@@ -78,6 +98,15 @@ jobs:
       - name: "Tienda: pruebas unitarias"
         if: steps.cambios.outputs.tienda == 'true'
         run: npx vitest run --project tienda
+      - name: "Tienda: migraciones de la base de datos"
+        if: steps.cambios.outputs.tienda == 'true'
+        run: npm run db:aplicar -w tienda
+      - name: "Tienda: pruebas de integración (base de datos)"
+        if: steps.cambios.outputs.tienda == 'true'
+        run: npx vitest run --project tienda-integracion
+      - name: "Tienda: carga de datos de ejemplo (dos veces, sin duplicar)"
+        if: steps.cambios.outputs.tienda == 'true'
+        run: npm run db:seed && npm run db:seed
       - name: "Tienda: compilación"
         if: steps.cambios.outputs.tienda == 'true'
         run: npm run build -w tienda

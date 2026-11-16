@@ -7,3 +7,5 @@ package-lock.json
 docs
 CLAUDE.md
 *.drawio
+apps/tienda/src/generated
+apps/tienda/prisma/migrations

@@ -158,6 +158,11 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 - `main` protegida: solo recibe cambios por pull request, también para administradores; sin force push ni borrado. El check "CI" se vuelve obligatorio al terminar ZTV-6.
 - Ramas `tipo/ZTV-##-descripcion`; el PO revisa e integra cada pull request.
 
+## Despliegue y ambientes (Vercel, aprobado 2026-11-15)
+- Proyectos Vercel Hobby: `zenda-tienda` (`apps/tienda`) y `zenda-notificaciones` (`apps/notificaciones`), con Next.js, Node 24 y la opción "omitir proyectos no afectados".
+- Producción: `https://zenda-tienda.vercel.app` y `https://zenda-notificaciones.vercel.app`. Solo cambian al integrar a `main`. Las vistas previas por PR exigen sesión en Vercel.
+- Ambientes: desarrollo local, CI, vista previa por PR y producción, cada uno con su rama de Neon. `staging` llega en el Sprint 3. Detalle en Confluence, página "Ambientes".
+
 ## Configuración de Jira (proyecto ZTV, team-managed)
 - Clave `ZTV`. Tablero: Por hacer → En curso → En pruebas → Listo.
 - Prioridad MoSCoW en campo personalizado "MoSCoW" (Historia: `customfield_10043`; Error: `customfield_10044`). Puntos: "Story point estimate".
