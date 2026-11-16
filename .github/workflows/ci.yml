@@ -1,0 +1,117 @@
+# Integración continua de Zenda (ZTV-6).
+# Corre en cada pull request hacia main y en cada cambio integrado a main.
+# El check se llama "CI": si queda en rojo, el pull request no se puede integrar (RN1 de ZTV-6).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 10 # RN3 de ZTV-6: el CI debe tardar menos de 10 minutos
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # S0-06-CP2: en un pull request solo se prueba la aplicación que cambió.
+      # Si cambia algo compartido (dependencias, contratos, configuración o este flujo), se prueban ambas.
+      - name: Detectar qué aplicación cambió
+        id: cambios
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            tienda=true; notificaciones=true
+          else
+            archivos=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+            echo "Archivos modificados:"; echo "$archivos"
+            comun='^(package\.json|package-lock\.json|packages/|vitest\.config\.mts|playwright\.config\.ts|tsconfig\.json|\.github/|\.prettier)'
+            tienda=false; notificaciones=false
+            if echo "$archivos" | grep -Eq "$comun"; then tienda=true; notificaciones=true; fi
+            if echo "$archivos" | grep -Eq '^(apps/tienda/|e2e/tienda/)'; then tienda=true; fi
+            if echo "$archivos" | grep -Eq '^(apps/notificaciones/|e2e/notificaciones/)'; then notificaciones=true; fi
+          fi
+          apps=$( { [ "$tienda" = true ] && echo tienda; [ "$notificaciones" = true ] && echo notificaciones; } | paste -sd, - )
+          echo "tienda=$tienda" >> "$GITHUB_OUTPUT"
+          echo "notificaciones=$notificaciones" >> "$GITHUB_OUTPUT"
+          echo "apps=$apps" >> "$GITHUB_OUTPUT"
+          echo "### Aplicaciones a probar: ${apps:-ninguna}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Formato (Prettier)
+        run: npm run format:check
+
+      - name: Tipos de la raíz (pruebas E2E y configuración)
+        run: npx tsc -p tsconfig.json
+
+      - name: Tipos del paquete de contratos
+        run: npm run typecheck -w @zenda/contratos
+
+      # ---------- Tienda ----------
+      - name: "Tienda: lint"
+        if: steps.cambios.outputs.tienda == 'true'
+        run: npm run lint -w tienda
+      - name: "Tienda: tipos"
+        if: steps.cambios.outputs.tienda == 'true'
+        run: npm run typecheck -w tienda
+      - name: "Tienda: pruebas unitarias"
+        if: steps.cambios.outputs.tienda == 'true'
+        run: npx vitest run --project tienda
+      - name: "Tienda: compilación"
+        if: steps.cambios.outputs.tienda == 'true'
+        run: npm run build -w tienda
+
+      # ---------- Notificaciones ----------
+      - name: "Notificaciones: lint"
+        if: steps.cambios.outputs.notificaciones == 'true'
+        run: npm run lint -w notificaciones
+      - name: "Notificaciones: tipos"
+        if: steps.cambios.outputs.notificaciones == 'true'
+        run: npm run typecheck -w notificaciones
+      - name: "Notificaciones: pruebas unitarias"
+        if: steps.cambios.outputs.notificaciones == 'true'
+        run: npx vitest run --project notificaciones
+      - name: "Notificaciones: compilación"
+        if: steps.cambios.outputs.notificaciones == 'true'
+        run: npm run build -w notificaciones
+
+      # ---------- Pruebas E2E (celular 390×844 y escritorio 1280×800) ----------
+      - name: Instalar el navegador de Playwright
+        if: steps.cambios.outputs.apps != ''
+        run: npx playwright install --with-deps chromium
+      - name: Pruebas E2E
+        if: steps.cambios.outputs.apps != ''
+        env:
+          ZENDA_E2E_APPS: ${{ steps.cambios.outputs.apps }}
+        run: npx playwright test
+
+      # S0-02-CP4: si algo falla, el reporte de Playwright queda como archivo descargable.
+      - name: Guardar el reporte de Playwright
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: reporte-playwright
+          path: playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore

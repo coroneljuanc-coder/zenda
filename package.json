@@ -11,13 +11,19 @@
     "dev": "concurrently --names tienda,notificaciones --prefix-colors magenta,cyan \"npm run dev -w tienda\" \"npm run dev -w notificaciones\"",
     "build": "npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.json",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^24.19.2",
     "concurrently": "^9.2.1",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
   },
   "engines": {
     "node": ">=20"
