@@ -1,9 +1,8 @@
 export default function Inicio() {
   return (
-    <main className="flex flex-1 items-center justify-center px-4">
-      <h1 className="text-center text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        Zenda – Próximamente
-      </h1>
-    </main>
+    <>
+      <h1 className="text-3xl font-extrabold tracking-tight">Catálogo</h1>
+      <p className="mt-2 text-gris">Muy pronto encontrarás aquí todos los productos de Zenda.</p>
+    </>
   );
 }

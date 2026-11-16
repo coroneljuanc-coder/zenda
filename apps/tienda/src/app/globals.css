@@ -1,26 +1,35 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Dirección visual «Vitrina» (ZTV-33, decisión del PO del 2026-11-16).
+ * Blanco y negro, esquinas rectas, sin sombras ni degradados; el lima solo marca lo nuevo.
+ * Todos los pares de texto y fondo cumplen WCAG AA (mínimo 4,5:1).
+ */
+@theme {
+  --color-tinta: #111111; /* texto principal y botones: 18,9:1 sobre blanco */
+  --color-gris: #5a5a5a; /* texto secundario: 6,9:1 sobre blanco */
+  --color-superficie: #f2f2f2; /* fondo de fotos y bloques */
+  --color-linea: #d9d9d9; /* bordes y divisiones (decorativo) */
+  --color-lima: #c8f169; /* etiqueta «Nuevo», siempre con texto tinta: 14,6:1 */
+  --color-blanco: #ffffff;
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-*: initial;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Público de 18 a 70 años: texto base de 17 px (en lugar de 16) para leer cómodo. */
+html {
+  font-size: 106.25%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-blanco);
+  color: var(--color-tinta);
+}
+
+/* Foco visible y consistente para quien navega con teclado. */
+:focus-visible {
+  outline: 2px solid var(--color-tinta);
+  outline-offset: 2px;
 }
