@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test.describe("Página de inicio de la tienda (S0-02-CP2)", () => {
   test("muestra «Zenda – Próximamente»", async ({ page }) => {
     await page.goto("/");
-    await expect(page).toHaveTitle("Zenda – Próximamente");
+    await expect(page).toHaveTitle("Zenda – ALTERADO A PROPÓSITO (S0-02-CP4)");
     await expect(
       page.getByRole("heading", { level: 1, name: "Zenda – Próximamente" }),
     ).toBeVisible();
