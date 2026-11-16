@@ -359,6 +359,20 @@ No aplica.
 - Integración Git de Vercel + integración Neon–Vercel para las variables de entorno.
 - La protección de rama + el PR obligatorio son el "botón de aprobación" del PO para producción.
 - ⚠ Recordatorio: el plan Hobby no permite uso comercial. Si Zenda empieza a vender de verdad, hay que pasar a Pro.
+- Dos proyectos de Vercel conectados al mismo repositorio (ADR-001): `zenda-tienda` (carpeta `apps/tienda`) y `zenda-notificaciones` (carpeta `apps/notificaciones`). Usan Next.js, Node 24 y la opción "omitir despliegues de proyectos no afectados", así que un PR solo despliega la app que cambió (S0-06-CP2).
+- Las vistas previas y las URL `*.vercel.app` quedan protegidas con Vercel Authentication (opción por defecto). Para verlas hay que iniciar sesión en Vercel.
+- Cada app declara `vitest` en sus dependencias de desarrollo, porque Vercel instala solo las dependencias de la app y `next build` revisa los tipos de los archivos de prueba.
+
+#### Ambientes (aprobados por el PO el 2026-11-15)
+| Ambiente | Dónde | Se actualiza con | Base de datos (Neon) |
+|---|---|---|---|
+| Desarrollo | Computador local (`npm run dev`) | Cada cambio guardado | Rama `desarrollo` |
+| Pruebas automáticas (CI) | GitHub Actions | Cada PR y cada integración a `main` | No aplica en el Sprint 0; desde ZTV-7, una rama temporal |
+| Vista previa | Vercel Preview (una URL por PR) | Cada push a un PR | Una rama por vista previa (integración Neon–Vercel) |
+| Producción | Vercel Production | Solo cuando el PO integra un PR a `main` | Rama `main` |
+
+- En el Sprint 3 se agrega un ambiente fijo `staging` (una rama de Git con su propia URL) para recibir el webhook de Wompi en modo sandbox. En el plan Hobby no hay ambientes personalizados, por eso se resuelve con una rama.
+- Neon Free permite 10 ramas por proyecto, así que las ramas de las vistas previas se borran cuando se cierra el PR.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
