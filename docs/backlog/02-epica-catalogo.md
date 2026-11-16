@@ -10,7 +10,7 @@
 **ID:** ZTV-10 (provisional CAT-01)
 **Título:** Crear diseño base de la tienda Zenda
 **Épica:** E1 – Catálogo
-**Tipo:** Habilitador técnico
+**Tipo:** Historia
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 1

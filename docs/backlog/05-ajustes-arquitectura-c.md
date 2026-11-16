@@ -28,7 +28,7 @@
 **ID:** ZTV-24 (provisional S0-06)
 **Título:** Estructurar el repositorio para dos aplicaciones
 **Épica:** E0 – Fundaciones técnicas
-**Tipo:** Habilitador técnico
+**Tipo:** Tarea
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 0
@@ -119,7 +119,7 @@ No aplica (las bases de datos se crean en ZTV-7 para la tienda y en COM-06 para 
 **ID:** ZTV-25 (provisional COM-06)
 **Título:** Publicar y recibir el evento "pedido pagado"
 **Épica:** E3 – Compra
-**Tipo:** Habilitador técnico
+**Tipo:** Tarea
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 4

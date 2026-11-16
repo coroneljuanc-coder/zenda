@@ -19,7 +19,7 @@ Toda historia usa esta plantilla, sin omitir secciones (si una no aplica: "No ap
 **ID:** [ZTV-###] (lo asigna Jira)
 **Título:** [verbo + objeto, máximo 10 palabras]
 **Épica:** [épica]
-**Tipo:** Historia | Habilitador técnico | Bug
+**Tipo:** Historia | Tarea | Bug
 **Prioridad (MoSCoW):** Must | Should | Could | Won't (por ahora)
 **Estimación:** [puntos Fibonacci]
 **Sprint:** [número o "Backlog"]
@@ -97,11 +97,14 @@ Independiente, Negociable, Valiosa, Estimable, Pequeña y Verificable. Si no cum
   - Claude propone la clasificación; si hay duda, decide el PO.
 - Informe de defectos con JQL: los "En Sprint" se filtran por `sprint = "Sprint N"`; los "Escapado" por la fecha de creación (`created`) dentro de las fechas del sprint, porque nacen en el backlog.
 
-## Desglose del trabajo y estimación
-- **Historia** (incluye el habilitador técnico): lleva los puntos.
-- **Subtarea**: cada paso técnico de una historia. Claude las crea en la planeación del sprint y las mueve a medida que avanza. No lleva puntos.
-- **Trabajo técnico independiente** (deuda técnica, mantenimiento, investigación): se registra como habilitador técnico (Historia + etiqueta `habilitador-tecnico`) con puntos y prioridad del PO. No se usa el tipo "Tarea" de Jira.
-- Los trabajos técnicos muy pequeños se agrupan en un habilitador de mantenimiento por sprint, con cada trabajo como subtarea, para no inflar la velocidad.
+## Desglose del trabajo y estimación (convención B, aprobada 2026-11-16)
+Para decidir el tipo, tres preguntas en orden:
+1. ¿El cliente o visitante nota el resultado en la tienda? → **Historia** (plantilla completa, puntos y MoSCoW).
+2. ¿Es trabajo técnico que vale por sí solo (infraestructura, arquitectura, mantenimiento, deuda técnica, investigación)? → **Tarea**.
+3. ¿Es un paso dentro de una Historia o de una Tarea? → **Subtarea** (sin puntos). Claude las crea en la planeación del sprint y las mueve a medida que avanza.
+- Los defectos van como **Error** (ver "Plan de pruebas y calidad").
+- Una Tarea grande lleva puntos, MoSCoW y criterios de aceptación, y se planea en el sprint como una historia. Las muy pequeñas se agrupan en una Tarea de mantenimiento por sprint, con cada trabajo como subtarea, para no inflar la velocidad.
+- Ya no se usa la etiqueta `habilitador-tecnico`: lo que antes era "habilitador técnico" ahora es Tarea. Ejemplos: ZTV-26 (arquitectura) y ZTV-27 (mantenimiento posterior al Sprint 0). El diseño base de la tienda (ZTV-10) es Historia, porque el visitante lo ve.
 
 ## Herramientas
 - Backlog y sprints: Jira
@@ -178,6 +181,6 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 ## Configuración de Jira (proyecto ZTV, team-managed)
 - Clave `ZTV`. Tablero: Por hacer → En curso → En pruebas → Listo.
 - Prioridad MoSCoW en campo personalizado "MoSCoW" (Historia: `customfield_10043`; Error: `customfield_10044`). Puntos: "Story point estimate".
-- Tipos: Historia → Historia; Habilitador técnico → Historia + etiqueta `habilitador-tecnico`; Bug → Error (con "Tipo de defecto", `customfield_10069`: En Sprint / Escapado); pasos técnicos de una historia → Subtarea.
+- Tipos: Historia → Historia; trabajo técnico independiente → Tarea (MoSCoW en su campo propio, pendiente de crear en ese tipo); Bug → Error (con "Tipo de defecto", `customfield_10069`: En Sprint / Escapado); pasos técnicos de una historia → Subtarea.
 - Épicas: ZTV-1 E0 Fundaciones, ZTV-2 E1 Catálogo, ZTV-3 E2 Carrito, ZTV-4 E3 Compra.
 - Ficha completa de cada historia: Confluence > "Requisitos del producto" > épica > historia (enlazada desde Jira). Jira guarda estado, puntos, MoSCoW y sprint; Confluence guarda la ficha completa. Si una regla cambia, se actualiza en Jira, Confluence y `docs/backlog/`.
