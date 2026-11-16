@@ -1,0 +1,25 @@
+{
+  "name": "zenda",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zenda – tienda virtual. Monorepo con la tienda (apps/tienda), el servicio de Notificaciones (apps/notificaciones) y los contratos compartidos (packages/contratos).",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently --names tienda,notificaciones --prefix-colors magenta,cyan \"npm run dev -w tienda\" \"npm run dev -w notificaciones\"",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
