@@ -1,3 +1,5 @@
+const precioDePrueba: number = "esto no es un número"; // S0-04-CP3: error de tipos a propósito
+
 export default function Inicio() {
   return (
     <main className="flex flex-1 items-center justify-center px-4">
