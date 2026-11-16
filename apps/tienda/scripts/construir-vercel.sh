@@ -1,5 +1,5 @@
 #!/bin/sh
-# Compilación de la tienda en Vercel (ZTV-7 / ZTV-8).
+# Compilación de la tienda en Vercel (ZTV-7 / ZTV-8). PR de prueba: rama de Neon por vista previa.
 # 1. Genera el cliente de Prisma.
 # 2. Aplica las migraciones pendientes de la base de datos (Neon):
 #    - Producción: siempre. Solo se despliega a producción cuando el PO integra un PR a main.
