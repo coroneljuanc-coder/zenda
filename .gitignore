@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+
+# Next.js y compilación
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Pruebas
+coverage/
+playwright-report/
+test-results/
+
+# Variables de entorno: nunca se suben (RN2 de ZTV-5). Solo el ejemplo sin valores.
+.env*
+!.env.example
+
+# Vercel
+.vercel
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+*.pem
+npm-debug.log*
+
+# Configuración local de Claude Code (permisos de esta máquina)
+.claude/settings.local.json
