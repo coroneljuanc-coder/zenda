@@ -150,6 +150,7 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 - **Opción C, híbrido:** una aplicación principal (monolito modular en Next.js: catálogo, carrito, compra, pagos e inventario, con su base de datos) más un **servicio independiente de Notificaciones** (correos) con despliegue propio, que recibe el evento "pedido pagado".
 - Pedido + inventario siguen en una sola transacción dentro de la aplicación principal.
 - ADR en Confluence: "ADR-001 – Arquitectura de la aplicación" (página 229554).
+- Diagrama de arquitectura: `docs/diagramas/arquitectura.drawio` (fuente editable) y `arquitectura.png`, publicado con la explicación de frontend y backend en la página de Confluence "Arquitectura de la aplicación: diagrama, frontend y backend" (884779, hija del ADR). Si la arquitectura cambia, se actualiza el `.drawio`, se exporta el PNG y se reemplaza en esa página.
 - Historias derivadas aprobadas y registradas (2026-11-15): ZTV-24 (repositorio con dos aplicaciones, Sprint 0) y ZTV-25 (evento "pedido pagado", Sprint 4); ZTV-21 y ZTV-23 ajustadas. Detalle: `docs/backlog/05-ajustes-arquitectura-c.md`.
 - Para empezar a escribir código falta la aprobación del Sprint 0 por el PO (DoR) y sus requisitos de entrada (Git y cuentas de GitHub, Vercel y Neon).
 
