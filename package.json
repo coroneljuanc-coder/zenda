@@ -14,8 +14,10 @@
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.json",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test": "npm run db:generar -w tienda && vitest run --project tienda --project notificaciones",
+    "test:e2e": "playwright test",
+    "test:integracion": "npm run db:generar -w tienda && vitest run --project tienda-integracion",
+    "db:seed": "npm run db:seed -w tienda"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",

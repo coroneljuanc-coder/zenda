@@ -1,0 +1,71 @@
+// Modelo de datos del catálogo de Zenda (ZTV-7).
+// Reglas de negocio:
+// - RN1: precios en pesos colombianos, enteros y mayores que 0.
+// - RN2: cada producto pertenece a exactamente una categoría.
+// - RN3: cada producto tiene al menos una variante, y el stock (por variante) nunca es negativo.
+// - RN4: el slug es único, en minúsculas y sin tildes.
+// Las reglas RN1 y RN3 también se protegen en la base de datos con restricciones CHECK
+// (ver la migración inicial), y se validan antes de guardar con Zod (src/lib/catalogo/validacion.ts).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Categoria {
+  id          String     @id @default(cuid())
+  nombre      String
+  slug        String     @unique
+  descripcion String?
+  orden       Int        @default(0)
+  creadoEn    DateTime   @default(now())
+  productos   Producto[]
+}
+
+model Producto {
+  id            String             @id @default(cuid())
+  nombre        String
+  slug          String             @unique
+  descripcion   String
+  /// Precio final en COP, con IVA incluido (D4). Entero mayor que 0.
+  precio        Int
+  categoriaId   String
+  categoria     Categoria          @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  activo        Boolean            @default(true)
+  creadoEn      DateTime           @default(now())
+  actualizadoEn DateTime           @updatedAt
+  variantes     VarianteProducto[]
+  imagenes      ImagenProducto[]
+
+  @@index([categoriaId])
+}
+
+model VarianteProducto {
+  id         String   @id @default(cuid())
+  productoId String
+  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  sku        String   @unique
+  talla      String?
+  color      String?
+  /// Unidades disponibles. Nunca negativo.
+  stock      Int      @default(0)
+  /// Precio propio de la variante en COP. Si está vacío, se usa el del producto.
+  precio     Int?
+
+  @@index([productoId])
+}
+
+model ImagenProducto {
+  id               String   @id @default(cuid())
+  productoId       String
+  producto         Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  url              String
+  textoAlternativo String
+  orden            Int
+
+  @@unique([productoId, orden])
+}

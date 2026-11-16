@@ -266,7 +266,15 @@ No aplica.
 ### Notas técnicas
 - **Prisma** como ORM: `prisma/schema.prisma`, migraciones con `prisma migrate`, seed con `prisma/seed.ts` usando `upsert` por `slug` (así no se duplica).
 - Validación con **Zod** antes de guardar.
-- Neon tiene "ramas" de base de datos: una para desarrollo y otra para CI.
+- Neon tiene "ramas" de base de datos: producción usa la rama principal y cada vista previa tiene su propia rama (integración Neon–Vercel).
+- **Implementado (2026-11-16):**
+  - Prisma 7.10 con el adaptador `@prisma/adapter-pg`. Modelo en `apps/tienda/prisma/schema.prisma` y migración inicial con restricciones CHECK (precio > 0, stock ≥ 0, formato del slug) como segunda protección.
+  - Validación con Zod 4 en `src/lib/catalogo/validacion.ts`. Los mensajes indican el producto y el campo, por ejemplo `Producto "x": precio debe ser mayor que 0`.
+  - Carga en `src/lib/catalogo/sembrar.ts`: primero valida todo y luego guarda en una sola transacción. Usa `upsert` por slug y SKU y no sobrescribe el stock de variantes que ya existen.
+  - Datos: 5 categorías y 21 productos (20 activos, uno agotado y uno con variantes de precio distinto). Las fotos son ilustraciones SVG propias en `public/productos/`.
+  - CI: un PostgreSQL 17 temporal dentro de GitHub Actions, en lugar de una rama de Neon. No necesita credenciales y no gasta el límite de 10 ramas de Neon Free.
+  - Desarrollo local: `prisma dev`, un PostgreSQL local y gratuito. No toca Neon.
+  - Vercel: `apps/tienda/vercel.json` ejecuta `scripts/construir-vercel.sh`. En producción aplica las migraciones (solo ocurre cuando el PO integra a `main`). En una vista previa solo toca la base si `ZENDA_BD_PREVIEW_AISLADA=1` confirma que tiene su propia rama de Neon; en ese caso aplica las migraciones y carga los datos de ejemplo. La carga de datos en producción la decide el PO.
 - Explicación sencilla: un **ORM** permite hablar con la base de datos usando TypeScript en lugar de SQL, y avisa si pedimos un campo que no existe.
 
 ### Definición de Listo (DoR)

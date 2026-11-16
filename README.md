@@ -20,25 +20,43 @@ npm install
 npm run dev
 ```
 
+### Base de datos local (una sola vez)
+
+La tienda usa PostgreSQL. En tu equipo se usa `prisma dev`, una base local y gratuita que no necesita cuentas:
+
+```bash
+cd apps/tienda
+npx prisma dev -n zenda --detach   # arranca la base local y muestra su URL "TCP"
+```
+
+Copia `.env.example` como `apps/tienda/.env.local` y pega ahí esa URL (`DATABASE_URL`) y la de la base sombra (`SHADOW_DATABASE_URL`, mismo texto con el puerto siguiente). Luego, desde la raíz:
+
+```bash
+npm run db:migrar -w tienda   # crea las tablas
+npm run db:seed               # carga el catálogo de ejemplo (se puede repetir sin duplicar)
+```
+
 - Tienda: http://localhost:3000
 - Servicio de Notificaciones: http://localhost:3001/api/salud
 
 ## Comandos útiles
 
-| Comando             | Para qué                                                                                |
-| ------------------- | --------------------------------------------------------------------------------------- |
-| `npm run lint`      | Revisa estilo y reglas (incluye la regla que impide mezclar código entre aplicaciones). |
-| `npm run typecheck` | Revisa los tipos de TypeScript.                                                         |
-| `npm run build`     | Compila las aplicaciones.                                                               |
-| `npm run format`    | Da formato al código con Prettier.                                                      |
-| `npm test`          | Pruebas unitarias y de integración (Vitest).                                            |
-| `npm run test:e2e`  | Pruebas de punta a punta en celular y escritorio (Playwright).                          |
+| Comando                    | Para qué                                                                                |
+| -------------------------- | --------------------------------------------------------------------------------------- |
+| `npm run lint`             | Revisa estilo y reglas (incluye la regla que impide mezclar código entre aplicaciones). |
+| `npm run typecheck`        | Revisa los tipos de TypeScript.                                                         |
+| `npm run build`            | Compila las aplicaciones.                                                               |
+| `npm run format`           | Da formato al código con Prettier.                                                      |
+| `npm test`                 | Pruebas unitarias (Vitest).                                                             |
+| `npm run test:integracion` | Pruebas de integración contra la base de datos local (borran sus datos).                |
+| `npm run db:seed`          | Carga el catálogo de ejemplo en la base de datos.                                       |
+| `npm run test:e2e`         | Pruebas de punta a punta en celular y escritorio (Playwright).                          |
 
 La primera vez, instala el navegador de pruebas con `npx playwright install chromium`.
 
 ## Integración continua
 
-Cada pull request hacia `main` ejecuta el check **CI** en GitHub Actions: formato, lint, tipos, pruebas unitarias, compilación y pruebas E2E. Si el check queda en rojo, el pull request no se puede integrar. Solo se prueba la aplicación que cambió; si cambia algo compartido, se prueban ambas.
+Cada pull request hacia `main` ejecuta el check **CI** en GitHub Actions: formato, lint, tipos, pruebas unitarias, migraciones y pruebas de integración contra un PostgreSQL temporal, carga de datos de ejemplo, compilación y pruebas E2E. Si el check queda en rojo, el pull request no se puede integrar. Solo se prueba la aplicación que cambió; si cambia algo compartido, se prueban ambas.
 
 ## Reglas del repositorio
 
