@@ -47,13 +47,13 @@ Un visitante puede **encontrar un producto, agregarlo al carrito y pagarlo** (en
 
 | Orden | Jira (ID provisional) | Título | Épica | Tipo | MoSCoW | Pts | Sprint propuesto |
 |---|---|---|---|---|---|---|---|
-| 1 | ZTV-5 (S0-01) | Crear repositorio y proyecto Next.js con TypeScript | E0 | Habilitador técnico | Must | 2 | 0 |
-| 2 | ZTV-6 (S0-02) | Configurar pruebas automáticas e integración continua | E0 | Habilitador técnico | Must | 3 | 0 |
-| 3 | ZTV-7 (S0-03) | Configurar base de datos con productos de ejemplo | E0 | Habilitador técnico | Must | 3 | 0 |
-| 4 | ZTV-8 (S0-04) | Desplegar automáticamente en Vercel | E0 | Habilitador técnico | Must | 2 | 0 |
-| 5 | ZTV-9 (S0-05) | Preparar Jira y Confluence para el proyecto | E0 | Habilitador técnico | Must | 2 | 0 |
-| 5b | ZTV-24 (S0-06) | Estructurar el repositorio para dos aplicaciones | E0 | Habilitador técnico | Must | 3 | 0 |
-| 6 | ZTV-10 (CAT-01) | Crear diseño base de la tienda Zenda | E1 | Habilitador técnico | Must | 3 | 1 |
+| 1 | ZTV-5 (S0-01) | Crear repositorio y proyecto Next.js con TypeScript | E0 | Tarea | Must | 2 | 0 |
+| 2 | ZTV-6 (S0-02) | Configurar pruebas automáticas e integración continua | E0 | Tarea | Must | 3 | 0 |
+| 3 | ZTV-7 (S0-03) | Configurar base de datos con productos de ejemplo | E0 | Tarea | Must | 3 | 0 |
+| 4 | ZTV-8 (S0-04) | Desplegar automáticamente en Vercel | E0 | Tarea | Must | 2 | 0 |
+| 5 | ZTV-9 (S0-05) | Preparar Jira y Confluence para el proyecto | E0 | Tarea | Must | 2 | 0 |
+| 5b | ZTV-24 (S0-06) | Estructurar el repositorio para dos aplicaciones | E0 | Tarea | Must | 3 | 0 |
+| 6 | ZTV-10 (CAT-01) | Crear diseño base de la tienda Zenda | E1 | Historia | Must | 3 | 1 |
 | 7 | ZTV-11 (CAT-02) | Ver listado de productos | E1 | Historia | Must | 3 | 1 |
 | 8 | ZTV-12 (CAT-03) | Navegar productos por categoría | E1 | Historia | Must | 3 | 1 |
 | 9 | ZTV-13 (CAT-04) | Ver ficha de producto | E1 | Historia | Must | 3 | 1 |
@@ -66,7 +66,7 @@ Un visitante puede **encontrar un producto, agregarlo al carrito y pagarlo** (en
 | 16 | ZTV-20 (COM-02) | Crear pedido y redirigir al pago | E3 | Historia | Must | 5 | 3 |
 | 17 | ZTV-21 (COM-03) | Confirmar pago y actualizar pedido e inventario | E3 | Historia | Must | 5 | 3 |
 | 18 | ZTV-22 (COM-04) | Mostrar resultado del pago al cliente | E3 | Historia | Must | 3 | 4 |
-| 19 | ZTV-25 (COM-06) | Publicar y recibir el evento "pedido pagado" | E3 | Habilitador técnico | Must | 5 | 4 |
+| 19 | ZTV-25 (COM-06) | Publicar y recibir el evento "pedido pagado" | E3 | Tarea | Must | 5 | 4 |
 | 20 | ZTV-23 (COM-05) | Enviar correo de confirmación de compra | E3 | Historia | Must | 3 | 4 |
 
 **Total MVP:** 15 pts (Sprint 0) + 57 pts (Sprints 1 a 4) = **72 puntos** (incluye ZTV-24 y ZTV-25 de la arquitectura C).

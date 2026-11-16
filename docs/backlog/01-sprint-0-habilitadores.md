@@ -10,7 +10,7 @@
 **ID:** ZTV-5 (provisional S0-01)
 **Título:** Crear repositorio y proyecto Next.js con TypeScript
 **Épica:** E0 – Fundaciones técnicas
-**Tipo:** Habilitador técnico
+**Tipo:** Tarea
 **Prioridad (MoSCoW):** Must
 **Estimación:** 2
 **Sprint:** 0
@@ -101,7 +101,7 @@ No aplica.
 **ID:** ZTV-6 (provisional S0-02)
 **Título:** Configurar pruebas automáticas e integración continua
 **Épica:** E0 – Fundaciones técnicas
-**Tipo:** Habilitador técnico
+**Tipo:** Tarea
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 0
@@ -193,7 +193,7 @@ No aplica.
 **ID:** ZTV-7 (provisional S0-03)
 **Título:** Configurar base de datos con productos de ejemplo
 **Épica:** E0 – Fundaciones técnicas
-**Tipo:** Habilitador técnico
+**Tipo:** Tarea
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 0
@@ -300,7 +300,7 @@ No aplica.
 **ID:** ZTV-8 (provisional S0-04)
 **Título:** Desplegar automáticamente en Vercel
 **Épica:** E0 – Fundaciones técnicas
-**Tipo:** Habilitador técnico
+**Tipo:** Tarea
 **Prioridad (MoSCoW):** Must
 **Estimación:** 2
 **Sprint:** 0
@@ -405,7 +405,7 @@ No aplica.
 **ID:** ZTV-9 (provisional S0-05)
 **Título:** Preparar Jira y Confluence para el proyecto
 **Épica:** E0 – Fundaciones técnicas
-**Tipo:** Habilitador técnico
+**Tipo:** Tarea
 **Prioridad (MoSCoW):** Must
 **Estimación:** 2
 **Sprint:** 0
@@ -439,7 +439,7 @@ Escenario 3: Sin conexión de Claude con Atlassian (error)
 - RN1: La clave del proyecto en Jira es `ZTV` y los IDs se generan como `ZTV-1`, `ZTV-2`, etc.
 - RN2: La prioridad se registra en el campo personalizado "MoSCoW" (Must, Should, Could, Won't), en Historia y Error.
 - RN3: Cada sprint tiene su página de plan de pruebas en Confluence, enlazada desde el sprint en Jira.
-- RN4: Los habilitadores técnicos se registran como Historia con la etiqueta `habilitador-tecnico`.
+- RN4: El trabajo técnico independiente se registra como Tarea (convención B, 2026-11-16; antes era Historia con la etiqueta `habilitador-tecnico`).
 
 ### Requisitos no funcionales
 - Seguridad: los tokens de Atlassian no se comparten por chat; la conexión se hace desde los conectores de la app.
