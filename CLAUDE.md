@@ -90,7 +90,18 @@ Independiente, Negociable, Valiosa, Estimable, Pequeña y Verificable. Si no cum
 - Cada criterio de aceptación → al menos un caso de prueba trazable (historia → criterio → caso → resultado).
 - Tipos: unitarias (precios, descuentos, inventario, totales), integración (API, BD, pagos, correos), E2E con Playwright (registro, búsqueda, carrito, compra), aceptación (aprobación final del PO), regresión (suite completa en GitHub Actions en cada PR; si falla, no se integra).
 - Al cierre de cada sprint: informe de pruebas (ejecutados, aprobados, fallidos, defectos y estado).
-- Defectos en Jira como "Bug": pasos para reproducir, resultado esperado y obtenido.
+- Defectos en Jira como "Bug" (tipo Error): pasos para reproducir, resultado esperado y obtenido. Todo defecto se registra, aunque se corrija en el mismo sprint (acción A1 de la retrospectiva del Sprint 0).
+- Clasificación en el campo "Tipo de defecto" (`customfield_10069`), según el estado de la historia afectada cuando se encuentra el defecto:
+  - **En Sprint**: la historia aún no está en "Listo". Se enlaza a la historia, no lleva puntos, se corrige de inmediato y la historia no pasa a "Listo" mientras el bug esté abierto.
+  - **Escapado**: la historia ya fue aceptada. Se enlaza a la historia original, lleva puntos y MoSCoW, y el PO lo prioriza en el backlog. Si afecta gravemente a producción, se corrige de inmediato como versión de corrección (vX.Y.1).
+  - Claude propone la clasificación; si hay duda, decide el PO.
+- Informe de defectos con JQL: los "En Sprint" se filtran por `sprint = "Sprint N"`; los "Escapado" por la fecha de creación (`created`) dentro de las fechas del sprint, porque nacen en el backlog.
+
+## Desglose del trabajo y estimación
+- **Historia** (incluye el habilitador técnico): lleva los puntos.
+- **Subtarea**: cada paso técnico de una historia. Claude las crea en la planeación del sprint y las mueve a medida que avanza. No lleva puntos.
+- **Trabajo técnico independiente** (deuda técnica, mantenimiento, investigación): se registra como habilitador técnico (Historia + etiqueta `habilitador-tecnico`) con puntos y prioridad del PO. No se usa el tipo "Tarea" de Jira.
+- Los trabajos técnicos muy pequeños se agrupan en un habilitador de mantenimiento por sprint, con cada trabajo como subtarea, para no inflar la velocidad.
 
 ## Herramientas
 - Backlog y sprints: Jira
@@ -162,11 +173,11 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 ## Despliegue y ambientes (Vercel, aprobado 2026-11-15)
 - Proyectos Vercel Hobby: `zenda-tienda` (`apps/tienda`) y `zenda-notificaciones` (`apps/notificaciones`), con Next.js, Node 24 y la opción "omitir proyectos no afectados".
 - Producción: `https://zenda-tienda.vercel.app` y `https://zenda-notificaciones.vercel.app`. Solo cambian al integrar a `main`. Las vistas previas por PR exigen sesión en Vercel.
-- Ambientes: desarrollo local, CI, vista previa por PR y producción, cada uno con su rama de Neon. `staging` llega en el Sprint 3. Detalle en Confluence, página "Ambientes".
+- Ambientes: desarrollo local (`prisma dev`), CI (PostgreSQL temporal), vista previa por PR (rama propia de Neon, que se borra al cerrar el PR) y producción (rama `main` de Neon). El UAT/`staging` está diferido hasta que exista el flujo completo de compra (decisión del PO del 2026-11-16) y se retoma en la planeación del Sprint 3. Detalle en Confluence, página "Ambientes".
 
 ## Configuración de Jira (proyecto ZTV, team-managed)
 - Clave `ZTV`. Tablero: Por hacer → En curso → En pruebas → Listo.
 - Prioridad MoSCoW en campo personalizado "MoSCoW" (Historia: `customfield_10043`; Error: `customfield_10044`). Puntos: "Story point estimate".
-- Tipos: Historia → Historia; Habilitador técnico → Historia + etiqueta `habilitador-tecnico`; Bug → Error.
+- Tipos: Historia → Historia; Habilitador técnico → Historia + etiqueta `habilitador-tecnico`; Bug → Error (con "Tipo de defecto", `customfield_10069`: En Sprint / Escapado); pasos técnicos de una historia → Subtarea.
 - Épicas: ZTV-1 E0 Fundaciones, ZTV-2 E1 Catálogo, ZTV-3 E2 Carrito, ZTV-4 E3 Compra.
 - Ficha completa de cada historia: Confluence > "Requisitos del producto" > épica > historia (enlazada desde Jira). Jira guarda estado, puntos, MoSCoW y sprint; Confluence guarda la ficha completa. Si una regla cambia, se actualiza en Jira, Confluence y `docs/backlog/`.
