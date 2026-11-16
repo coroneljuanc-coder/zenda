@@ -180,7 +180,7 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 
 ## Configuración de Jira (proyecto ZTV, team-managed)
 - Clave `ZTV`. Tablero: Por hacer → En curso → En pruebas → Listo.
-- Prioridad MoSCoW en campo personalizado "MoSCoW" (Historia: `customfield_10043`; Error: `customfield_10044`). Puntos: "Story point estimate".
-- Tipos: Historia → Historia; trabajo técnico independiente → Tarea (MoSCoW en su campo propio, pendiente de crear en ese tipo); Bug → Error (con "Tipo de defecto", `customfield_10069`: En Sprint / Escapado); pasos técnicos de una historia → Subtarea.
+- Prioridad MoSCoW en campo personalizado "MoSCoW" (Historia y Tarea: `customfield_10043`; Error: `customfield_10044`). Puntos: "Story point estimate".
+- Tipos: Historia → Historia; trabajo técnico independiente → Tarea (comparte el campo MoSCoW `customfield_10043` con Historia); Bug → Error (con "Tipo de defecto", `customfield_10069`: En Sprint / Escapado); pasos técnicos de una historia → Subtarea.
 - Épicas: ZTV-1 E0 Fundaciones, ZTV-2 E1 Catálogo, ZTV-3 E2 Carrito, ZTV-4 E3 Compra.
 - Ficha completa de cada historia: Confluence > "Requisitos del producto" > épica > historia (enlazada desde Jira). Jira guarda estado, puntos, MoSCoW y sprint; Confluence guarda la ficha completa. Si una regla cambia, se actualiza en Jira, Confluence y `docs/backlog/`.
