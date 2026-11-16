@@ -156,6 +156,8 @@ Construcción incremental: primero un MVP (catálogo, carrito y compra) y luego 
 - D5 Variantes modeladas desde el Sprint 0; el selector de talla y color es "Should".
 - D6 Productos del MVP cargados por seed (sin panel de administración).
 - D7 Logo de texto "Zenda" y paleta sobria que el PO aprueba.
+- D8 (2026-11-16) Producción muestra los 21 productos de ejemplo hasta que lleguen los reales. Se cargan en la compilación de producción con `ZENDA_SEED_PRODUCCION=1`, una variable de Vercel solo para Production. Pendiente de confirmar con el PO: el aviso visible «Tienda en construcción: productos de ejemplo» (se decide en la planeación del Sprint 1, ZTV-10).
+- D9 (2026-11-16) Versiones del producto, una por sprint: v0.1.0 Fundaciones (Sprint 0), v0.2.0 Catálogo, v0.3.0 Carrito, v0.4.0 Pago y v1.0.0 MVP. Las correcciones urgentes en producción salen como vX.Y.1. En Jira, cada historia lleva su versión ("fixVersion") y la versión se publica al cerrar el sprint.
 
 Backlog e historias: `docs/backlog/`.
 Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y `flujo-mvp.png`; incrustado en las épicas ZTV-2, ZTV-3 y ZTV-4 de Jira. Si el flujo cambia, se actualiza el `.drawio`, se exporta el PNG y se reemplaza en las épicas.
