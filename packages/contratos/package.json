@@ -1,0 +1,18 @@
+{
+  "name": "@zenda/contratos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Contratos compartidos entre la tienda y el servicio de Notificaciones. Es lo único que las dos aplicaciones pueden compartir (RN1 de ZTV-24).",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}
