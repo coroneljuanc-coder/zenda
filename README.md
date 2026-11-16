@@ -58,6 +58,10 @@ La primera vez, instala el navegador de pruebas con `npx playwright install chro
 
 Cada pull request hacia `main` ejecuta el check **CI** en GitHub Actions: formato, lint, tipos, pruebas unitarias, migraciones y pruebas de integración contra un PostgreSQL temporal, carga de datos de ejemplo, compilación y pruebas E2E. Si el check queda en rojo, el pull request no se puede integrar. Solo se prueba la aplicación que cambió; si cambia algo compartido, se prueban ambas.
 
+## Bases de datos de las vistas previas
+
+Cada vista previa de la tienda tiene su propia rama de base de datos en Neon (`preview/<rama-de-git>`), con las migraciones aplicadas y los datos de ejemplo cargados. Al cerrar o integrar un pull request, la tarea **Limpiar ramas de Neon** (`.github/workflows/limpiar-ramas-neon.yml`) borra esa rama para no superar el límite de 10 ramas de Neon Free. Necesita el secreto `NEON_API_KEY` en GitHub. También se puede ejecutar a mano desde la pestaña Actions, indicando la rama de Git.
+
 ## Reglas del repositorio
 
 - La rama `main` solo recibe cambios por pull request.

@@ -1,0 +1,63 @@
+# Limpieza de ramas de Neon de las vistas previas (ZTV-7 / ZTV-8).
+# Cada vista previa de Vercel tiene su propia rama de base de datos en Neon, llamada "preview/<rama-de-git>".
+# Neon Free permite solo 10 ramas por proyecto y Vercel las conserva hasta 6 meses, así que esta tarea
+# borra la rama de Neon apenas se cierra (o se integra) el pull request.
+#
+# Necesita el secreto NEON_API_KEY: una llave de Neon con alcance solo sobre este proyecto. El PO la crea
+# en Neon y la guarda en GitHub (Settings > Secrets and variables > Actions); nunca va en el código ni en el chat.
+name: Limpiar ramas de Neon
+
+on:
+  pull_request:
+    types: [closed]
+  # Para borrar a mano la rama de una vista previa vieja (por ejemplo, de un PR anterior a esta tarea).
+  workflow_dispatch:
+    inputs:
+      rama_git:
+        description: "Rama de Git del PR (se borra la rama de Neon preview/<rama_git>)"
+        required: true
+        type: string
+
+# La tarea solo habla con la API de Neon: no necesita permisos sobre el repositorio.
+permissions: {}
+
+jobs:
+  borrar:
+    name: Borrar la rama de Neon de la vista previa
+    # Los PR que vienen de forks no tienen acceso a los secretos: no se intenta nada en ese caso.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      # ID del proyecto de Neon de la tienda ("neon-cinnabar-cable"). No es un dato secreto.
+      NEON_PROJECT_ID: royal-wildflower-57643608
+      # El nombre de la rama llega por variable de entorno (no se pega dentro del script) para evitar inyección.
+      RAMA_GIT: ${{ github.event.pull_request.head.ref || inputs.rama_git }}
+    steps:
+      - name: Borrar preview/<rama> en Neon
+        run: |
+          set -euo pipefail
+          if [ -z "${NEON_API_KEY:-}" ]; then
+            echo "::error::Falta el secreto NEON_API_KEY en GitHub (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+          rama="preview/${RAMA_GIT}"
+          api="https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches"
+          auth=(-H "Authorization: Bearer ${NEON_API_KEY}" -H "Accept: application/json")
+
+          # Busca la rama por nombre exacto. Nunca toca la rama principal (default) ni ramas protegidas.
+          id=$(curl -fsS "${auth[@]}" --get --data-urlencode "search=${rama}" "${api}" \
+            | jq -r --arg nombre "${rama}" \
+                '.branches[] | select(.name == $nombre and (.default | not) and (.protected | not)) | .id')
+
+          if [ -z "${id}" ]; then
+            echo "No existe la rama ${rama} en Neon: no hay nada que borrar."
+            echo "### No había rama de Neon para \`${rama}\`" >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          curl -fsS -X DELETE "${auth[@]}" "${api}/${id}" > /dev/null
+          echo "Rama de Neon borrada: ${rama} (${id})"
+          echo "### Rama de Neon borrada: \`${rama}\`" >> "${GITHUB_STEP_SUMMARY}"
