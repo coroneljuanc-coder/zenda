@@ -1,4 +1,10 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
+
+/** El atajo `@/` de la tienda (apps/tienda/tsconfig.json) también en las pruebas. */
+const aliasTienda = {
+  "@": fileURLToPath(new URL("./apps/tienda/src", import.meta.url)),
+};
 
 /**
  * Pruebas unitarias y de integración (Vitest).
@@ -11,6 +17,7 @@ export default defineConfig({
   test: {
     projects: [
       {
+        resolve: { alias: aliasTienda },
         test: {
           name: "tienda",
           include: ["apps/tienda/src/**/*.test.ts"],
@@ -19,6 +26,7 @@ export default defineConfig({
         },
       },
       {
+        resolve: { alias: aliasTienda },
         test: {
           name: "tienda-integracion",
           include: ["apps/tienda/src/**/*.integracion.test.ts"],

@@ -17,7 +17,7 @@ test.describe("Página «No encontramos esta página» (ZTV-36)", () => {
 
     await page.getByRole("link", { name: "Volver al inicio" }).click();
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Catálogo" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Productos" })).toBeVisible();
   });
 
   test("CAT-03-CP4 · una categoría inexistente muestra la 404 propia", async ({ page }) => {
