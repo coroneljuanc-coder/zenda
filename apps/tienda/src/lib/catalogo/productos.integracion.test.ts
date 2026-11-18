@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { PrismaClient } from "../../generated/prisma/client";
+import { consultarCategoria } from "./categorias";
 import { consultarPaginaProductos } from "./productos";
 
 const envLocal = join(import.meta.dirname, "../../../.env.local");
@@ -56,8 +57,8 @@ async function crearProducto(categoriaId: string, n: number, opciones: Opciones 
   });
 }
 
-async function crearCategoria() {
-  const categoria = await bd.categoria.create({ data: { nombre: "Prueba", slug: "prueba" } });
+async function crearCategoria(slug = "prueba") {
+  const categoria = await bd.categoria.create({ data: { nombre: `Categoría ${slug}`, slug } });
   return categoria.id;
 }
 
@@ -128,5 +129,59 @@ describe("consultarPaginaProductos", () => {
       agotado: true,
       imagen: { url: "/productos/producto-01.svg", textoAlternativo: "Foto de producto-01" },
     });
+  });
+});
+
+describe("consultarPaginaProductos por categoría (ZTV-12)", () => {
+  it("CAT-03-CP2 · solo los productos activos de esa categoría", async () => {
+    const hogar = await crearCategoria("hogar");
+    const ropa = await crearCategoria("ropa");
+    await crearProducto(hogar, 1);
+    await crearProducto(hogar, 2, { activo: false });
+    await crearProducto(ropa, 3);
+
+    const resultado = await consultarPaginaProductos(bd, 1, { categoriaId: hogar });
+    expect(resultado.productos.map((p) => p.slug)).toEqual(["producto-01"]);
+    expect(resultado).toMatchObject({ total: 1, pagina: 1, totalPaginas: 1 });
+  });
+
+  it("CAT-03-CP3 · una categoría sin productos activos devuelve una lista vacía", async () => {
+    const vacia = await crearCategoria("vacia");
+    const otra = await crearCategoria("otra");
+    await crearProducto(otra, 1);
+    await crearProducto(vacia, 2, { activo: false });
+
+    expect(await consultarPaginaProductos(bd, 1, { categoriaId: vacia })).toEqual({
+      productos: [],
+      pagina: 1,
+      totalPaginas: 1,
+      total: 0,
+    });
+  });
+
+  it("RN1 de CAT-03 · la paginación por categoría usa las mismas reglas (12 + 1)", async () => {
+    const hogar = await crearCategoria("hogar");
+    for (let n = 1; n <= 13; n++) await crearProducto(hogar, n);
+
+    const segunda = await consultarPaginaProductos(bd, 5, { categoriaId: hogar });
+    expect(segunda).toMatchObject({ pagina: 2, totalPaginas: 2, total: 13 });
+    expect(segunda.productos).toHaveLength(1);
+  });
+});
+
+describe("consultarCategoria (ZTV-12)", () => {
+  it("RN3 · encuentra la categoría por su slug", async () => {
+    await bd.categoria.create({
+      data: { nombre: "Hogar", slug: "hogar", descripcion: "Cocina, descanso y decoración." },
+    });
+    expect(await consultarCategoria(bd, "hogar")).toMatchObject({
+      nombre: "Hogar",
+      slug: "hogar",
+      descripcion: "Cocina, descanso y decoración.",
+    });
+  });
+
+  it("escenario 3 · un slug que no existe devuelve null (página 404)", async () => {
+    expect(await consultarCategoria(bd, "no-existe")).toBeNull();
   });
 });

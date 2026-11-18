@@ -23,14 +23,18 @@ export type PaginaProductos = {
  * - Escenario 1: del más reciente al más antiguo; si dos productos tienen la misma fecha, por
  *   nombre, para que el orden sea siempre el mismo.
  * - RN5: 12 por página; una página que no existe muestra la última válida.
+ * Con `categoriaId`, solo los productos de esa categoría (ZTV-12, mismas reglas: RN1 de CAT-03).
  * Recibe el cliente de base de datos para poder probarla contra una base de prueba.
  */
 export async function consultarPaginaProductos(
   bd: PrismaClient,
   paginaPedida: number,
-  porPagina = PRODUCTOS_POR_PAGINA,
+  {
+    categoriaId,
+    porPagina = PRODUCTOS_POR_PAGINA,
+  }: { categoriaId?: string; porPagina?: number } = {},
 ): Promise<PaginaProductos> {
-  const donde = { activo: true };
+  const donde = { activo: true, ...(categoriaId ? { categoriaId } : {}) };
   const total = await bd.producto.count({ where: donde });
   const { pagina, totalPaginas } = ajustarPagina(paginaPedida, total, porPagina);
 

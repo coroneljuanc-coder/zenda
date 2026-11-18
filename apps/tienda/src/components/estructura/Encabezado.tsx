@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EnlaceCategoria } from "./EnlaceCategoria";
 import { listarCategoriasMenu } from "@/lib/catalogo/menu";
 import { MenuCelular } from "./MenuCelular";
 
@@ -26,12 +27,12 @@ export async function Encabezado() {
           <ul className="flex gap-6 text-sm">
             {categorias.map((categoria) => (
               <li key={categoria.slug}>
-                <Link
-                  href={`/categoria/${categoria.slug}`}
+                <EnlaceCategoria
+                  slug={categoria.slug}
                   className="flex min-h-11 items-center underline-offset-4 hover:underline"
                 >
                   {categoria.nombre}
-                </Link>
+                </EnlaceCategoria>
               </li>
             ))}
           </ul>

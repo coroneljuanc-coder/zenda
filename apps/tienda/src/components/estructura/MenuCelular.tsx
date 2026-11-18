@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { EnlaceCategoria } from "./EnlaceCategoria";
 import { useEffect, useId, useRef, useState } from "react";
 import type { CategoriaMenu } from "@/lib/catalogo/categorias";
 
@@ -66,13 +66,13 @@ export function MenuCelular({ categorias }: { categorias: CategoriaMenu[] }) {
             <ul>
               {categorias.map((categoria) => (
                 <li key={categoria.slug} className="border-b border-linea last:border-b-0">
-                  <Link
-                    href={`/categoria/${categoria.slug}`}
+                  <EnlaceCategoria
+                    slug={categoria.slug}
                     onClick={() => setAbierto(false)}
                     className="flex min-h-12 items-center px-4 text-lg"
                   >
                     {categoria.nombre}
-                  </Link>
+                  </EnlaceCategoria>
                 </li>
               ))}
             </ul>
