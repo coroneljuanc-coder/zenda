@@ -25,7 +25,12 @@ jobs:
   borrar:
     name: Borrar la rama de Neon de la vista previa
     # Los PR que vienen de forks no tienen acceso a los secretos: no se intenta nada en ese caso.
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    # Nunca borra la base de la rama desarrollo: es el ambiente de la Sprint Review y sigue viva
+    # después del PR de publicación (desarrollo → main).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref != 'desarrollo')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
