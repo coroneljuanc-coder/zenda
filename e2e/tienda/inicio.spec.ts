@@ -16,7 +16,7 @@ test.describe("Estructura común de la tienda (ZTV-10)", () => {
     await expect(pie.getByText("© 2026 Zenda · Tienda de pruebas")).toBeVisible();
     await expect(pie.getByText("Tienda de pruebas: no se realizan cobros reales")).toBeVisible();
 
-    await expect(page.getByRole("heading", { level: 1, name: "Catálogo" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Productos" })).toBeVisible();
   });
 
   test("CAT-01-CP5 · muestra el banner de productos de ejemplo arriba", async ({ page }) => {
