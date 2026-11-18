@@ -13,10 +13,12 @@ import { interpretarPagina } from "@/lib/catalogo/reglas";
 type Props = PageProps<"/categoria/[slug]">;
 
 /**
- * Esta página espera a saber qué categoría es antes de mostrarse (no navega «al instante» con un
- * esqueleto): así una categoría inexistente responde con un 404 real (escenario 3) y el título,
- * la ruta y la descripción salen completos desde el primer momento. Las categorías existentes se
- * generan al compilar, así que la espera es mínima.
+ * Esta página espera a saber qué categoría es antes de mostrar el título, la ruta y la
+ * descripción, en vez de mostrar un esqueleto genérico. Las categorías existentes se generan al
+ * compilar, así que la espera es mínima.
+ * Una categoría inexistente (escenario 3) muestra «No encontramos esta página». En su primera
+ * visita, Next.js 16 ya envió el esqueleto con estado 200 y lo marca «noindex»; desde la segunda
+ * visita responde 404.
  */
 export const instant = false;
 
