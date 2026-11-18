@@ -14,7 +14,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 1
-**Estado:** En pruebas (pendiente la aceptación del PO)
+**Estado:** Hecho (aceptada por el PO el 2026-11-18)
 
 ### Historia
 Como visitante,
@@ -79,7 +79,7 @@ Lee **Categoria** (nombre, slug, orden).
 | CAT-01-CP4 | 1 | Aceptación | Navegación solo con teclado | Todos los enlaces son alcanzables y el foco es visible |
 | CAT-01-CP5 | D8 | E2E | Cualquier página | Banner "Tienda en construcción: productos de ejemplo" visible arriba |
 
-**Resultados (2026-11-18):** CP1, CP2, CP3 y CP5 aprobados en E2E (celular y escritorio). CP4 aprobado por el equipo con revisión manual y E2E; falta la confirmación del PO. La prueba automática WCAG 2.1 AA (axe) pasa en cada PR. Defecto encontrado y corregido: ZTV-55.
+**Resultados (2026-11-18):** CP1, CP2, CP3 y CP5 aprobados en E2E (celular y escritorio). CP4 aprobado con revisión manual y E2E, y confirmado por el PO al aceptar la historia. La prueba automática WCAG 2.1 AA (axe) pasa en cada PR. Defecto encontrado y corregido: ZTV-55.
 
 ### Notas técnicas
 - `src/app/layout.tsx`: estructura común con `SaltarAlContenido`, `BannerPruebas`, `Encabezado` y `PiePagina` (en `src/components/estructura/`); `src/app/not-found.tsx` para la 404.
@@ -99,11 +99,11 @@ Lee **Categoria** (nombre, slug, orden).
 
 ### Definición de Terminado (DoD)
 - [x] Código en GitHub, revisado e integrado a `main` (PR #14 a #17)
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
 - [x] Pruebas automatizadas pasando en GitHub Actions
 - [x] Desplegado en Vercel (https://zenda-tienda.vercel.app)
 - [x] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Aceptado por el Product Owner (2026-11-18)
 
 ---
 
