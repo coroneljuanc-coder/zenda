@@ -38,10 +38,13 @@ export async function Encabezado() {
         </nav>
         <p
           className="flex min-h-11 items-center justify-self-end gap-2 text-sm"
-          aria-label="Carrito: 0 productos"
+          data-prueba="carrito"
         >
           <IconoBolsa />
-          <span aria-hidden="true">0</span>
+          {/* Texto solo para lectores de pantalla: un <p> no admite aria-label (ZTV-55). */}
+          <span className="sr-only">Carrito: </span>
+          <span>0</span>
+          <span className="sr-only"> productos</span>
         </p>
       </div>
     </header>

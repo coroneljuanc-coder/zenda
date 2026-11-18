@@ -7,7 +7,10 @@ test.describe("Estructura común de la tienda (ZTV-10)", () => {
 
     const encabezado = page.getByRole("banner");
     await expect(encabezado.getByRole("link", { name: "Zenda, ir al inicio" })).toBeVisible();
-    await expect(encabezado.getByLabel("Carrito: 0 productos")).toBeVisible();
+    const carrito = encabezado.locator('[data-prueba="carrito"]');
+    await expect(carrito).toBeVisible();
+    // Lo que anuncia un lector de pantalla (incluye el texto oculto a la vista, ZTV-55).
+    await expect(carrito).toHaveText("Carrito: 0 productos");
 
     const pie = page.getByRole("contentinfo");
     await expect(pie.getByText("© 2026 Zenda · Tienda de pruebas")).toBeVisible();
