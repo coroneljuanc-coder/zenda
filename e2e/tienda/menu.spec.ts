@@ -46,7 +46,9 @@ test.describe("Menú de categorías (ZTV-35)", () => {
       .getByRole("navigation", { name: "Categorías" })
       .getByRole("link", { name: "Hogar" })
       .click();
-    await expect(page).toHaveURL(/\/categoria\/hogar$/);
+    // Margen amplio: en desarrollo, la primera visita a una página nueva se compila en el momento
+    // y con varias pruebas en paralelo puede tardar más de los 5 s por defecto.
+    await expect(page).toHaveURL(/\/categoria\/hogar$/, { timeout: 20_000 });
     await expect(page.getByRole("navigation", { name: "Categorías" })).toBeHidden();
   });
 });
