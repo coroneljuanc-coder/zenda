@@ -14,7 +14,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 1
-**Estado:** Por hacer
+**Estado:** En pruebas (pendiente la aceptación del PO)
 
 ### Historia
 Como visitante,
@@ -52,9 +52,9 @@ Escenario 3: Página inexistente (error)
 
 ### Diseño / Interfaz
 - Encabezado: logo de texto "Zenda" a la izquierda, menú de categorías (en escritorio) o botón ☰ (en celular), ícono de carrito a la derecha.
-- Pie: "© 2026 Zenda · Tienda de pruebas: no se realizan cobros reales".
+- Pie: "© 2026 Zenda · Tienda de pruebas" y "Tienda de pruebas: no se realizan cobros reales". Arriba, banner "Tienda en construcción: productos de ejemplo" (D8).
 - Página 404: "No encontramos esta página" + botón "Volver al inicio".
-- Paleta y tipografía: D7 (te presento 2 opciones para que elijas).
+- Paleta y tipografía: dirección «Vitrina», elegida por el PO el 2026-11-16 (ZTV-33, D7): blanco y negro #111111, gris #5A5A5A, superficie #F2F2F2, lima #C8F169 solo para «Nuevo»; esquinas rectas, sin sombras; letra Archivo; logo «zenda» en minúscula; texto base de 17 px.
 
 ### Notificaciones y correos
 No aplica.
@@ -77,11 +77,17 @@ Lee **Categoria** (nombre, slug, orden).
 | CAT-01-CP2 | 2 | E2E | Celular 390×844 | El botón ☰ abre y cierra el menú |
 | CAT-01-CP3 | 3 | E2E | URL `/abc` | Mensaje "No encontramos esta página" y botón funcional |
 | CAT-01-CP4 | 1 | Aceptación | Navegación solo con teclado | Todos los enlaces son alcanzables y el foco es visible |
+| CAT-01-CP5 | D8 | E2E | Cualquier página | Banner "Tienda en construcción: productos de ejemplo" visible arriba |
+
+**Resultados (2026-11-18):** CP1, CP2, CP3 y CP5 aprobados en E2E (celular y escritorio). CP4 aprobado por el equipo con revisión manual y E2E; falta la confirmación del PO. La prueba automática WCAG 2.1 AA (axe) pasa en cada PR. Defecto encontrado y corregido: ZTV-55.
 
 ### Notas técnicas
-- `src/app/layout.tsx` con los componentes `Encabezado`, `MenuCategorias`, `PiePagina`; `not-found.tsx`.
-- Tailwind CSS; las categorías se leen en un Server Component con caché.
-- Prueba de accesibilidad automática con `@axe-core/playwright`.
+- `src/app/layout.tsx`: estructura común con `SaltarAlContenido`, `BannerPruebas`, `Encabezado` y `PiePagina` (en `src/components/estructura/`); `src/app/not-found.tsx` para la 404.
+- Colores y letra como tokens de Tailwind 4 en `src/app/globals.css`; letra Archivo con `next/font`.
+- Menú: `src/lib/catalogo/menu.ts` lee las categorías con `"use cache"` (1 hora, etiqueta `categorias`); `MenuCelular` es un componente de cliente (Escape cierra y devuelve el foco). Conexión única a la base en `src/lib/bd.ts`.
+- Textos de tienda de pruebas en `src/lib/tienda.ts` (`TIENDA_DE_PRUEBAS`).
+- Pruebas: E2E en `e2e/tienda/` (inicio, menú, 404 y accesibilidad con `@axe-core/playwright` 4.14.0) e integración del orden de categorías (RN1).
+- PR: #14 (diseño base), #15 (menú), #16 (404) y #17 (accesibilidad y ZTV-55).
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
@@ -89,14 +95,14 @@ Lee **Categoria** (nombre, slug, orden).
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas (D7 aceptada; la paleta se elige al iniciar CAT-01)
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (planeación del Sprint 1, 2026-11-16)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
+- [x] Código en GitHub, revisado e integrado a `main` (PR #14 a #17)
 - [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (https://zenda-tienda.vercel.app)
+- [x] Documentado en Confluence
 - [ ] Aceptado por el Product Owner
 
 ---
