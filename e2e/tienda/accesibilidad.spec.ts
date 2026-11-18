@@ -25,6 +25,12 @@ test.describe("Accesibilidad WCAG 2.1 AA (ZTV-37)", () => {
     await revisar(page);
   });
 
+  test("página de una categoría (ZTV-12)", async ({ page }) => {
+    await page.goto("/categoria/hogar");
+    await expect(page.getByRole("heading", { level: 1, name: "Hogar" })).toBeVisible();
+    await revisar(page);
+  });
+
   test("página «No encontramos esta página»", async ({ page }) => {
     await page.goto("/abc");
     await revisar(page);

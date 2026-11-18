@@ -3,7 +3,9 @@ import { expect, test, type Page } from "@playwright/test";
 // Datos de ejemplo: 21 productos cargados, 20 activos (la gorra está inactiva).
 // El orden exacto (más reciente primero) se prueba en la integración, con fechas controladas:
 // aquí depende de cuándo se cargó cada producto de ejemplo en la base de esa ejecución.
-const tarjetas = (page: Page) => page.locator('[data-prueba="tarjeta-producto"]');
+// Solo las visibles: Next.js deja la página anterior oculta en el documento para volver rápido.
+const tarjetas = (page: Page) =>
+  page.locator('[data-prueba="tarjeta-producto"]').filter({ visible: true });
 
 test.describe("Listado de productos (ZTV-11)", () => {
   test("CAT-02-CP1 · la página de inicio muestra 12 productos con foto, nombre y precio", async ({
