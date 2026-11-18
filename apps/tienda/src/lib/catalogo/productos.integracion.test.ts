@@ -6,7 +6,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { PrismaClient } from "../../generated/prisma/client";
 import { consultarCategoria } from "./categorias";
-import { consultarPaginaProductos } from "./productos";
+import { consultarPaginaProductos, consultarProducto, consultarSlugsProductos } from "./productos";
 
 const envLocal = join(import.meta.dirname, "../../../.env.local");
 if (!process.env.DATABASE_URL && existsSync(envLocal)) process.loadEnvFile(envLocal);
@@ -183,5 +183,54 @@ describe("consultarCategoria (ZTV-12)", () => {
 
   it("escenario 3 · un slug que no existe devuelve null (página 404)", async () => {
     expect(await consultarCategoria(bd, "no-existe")).toBeNull();
+  });
+});
+
+describe("consultarProducto (ZTV-13)", () => {
+  it("arma la ficha: todas las fotos en orden (RN1), precio, disponibilidad y categoría", async () => {
+    const categoria = await crearCategoria("hogar");
+    await crearProducto(categoria, 1, { stocks: [2, 1], precio: 89_900 });
+
+    expect(await consultarProducto(bd, "producto-01")).toEqual({
+      nombre: "Producto 01",
+      slug: "producto-01",
+      descripcion: "Producto de prueba",
+      textoPrecio: "$ 89.900",
+      unidades: 3,
+      disponibilidad: "¡Últimas 3 unidades!",
+      agotado: false,
+      categoria: { nombre: "Categoría hogar", slug: "hogar" },
+      imagenes: [
+        { url: "/productos/producto-01.svg", textoAlternativo: "Foto de producto-01" },
+        { url: "/productos/producto-01-2.svg", textoAlternativo: "Segunda foto" },
+      ],
+    });
+  });
+
+  it("escenario 3 · un producto sin unidades queda agotado", async () => {
+    const categoria = await crearCategoria();
+    await crearProducto(categoria, 1, { stocks: [0, 0] });
+    expect(await consultarProducto(bd, "producto-01")).toMatchObject({
+      unidades: 0,
+      disponibilidad: "Agotado",
+      agotado: true,
+    });
+  });
+
+  it("CAT-04-CP5 · RN3 · un producto inactivo no es accesible (null → 404)", async () => {
+    const categoria = await crearCategoria();
+    await crearProducto(categoria, 1, { activo: false });
+    expect(await consultarProducto(bd, "producto-01")).toBeNull();
+  });
+
+  it("escenario 4 · un slug que no existe devuelve null (404)", async () => {
+    expect(await consultarProducto(bd, "no-existe")).toBeNull();
+  });
+
+  it("consultarSlugsProductos solo incluye productos activos", async () => {
+    const categoria = await crearCategoria();
+    await crearProducto(categoria, 1);
+    await crearProducto(categoria, 2, { activo: false });
+    expect(await consultarSlugsProductos(bd)).toEqual(["producto-01"]);
   });
 });

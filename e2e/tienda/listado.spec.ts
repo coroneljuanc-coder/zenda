@@ -46,6 +46,8 @@ test.describe("Listado de productos (ZTV-11)", () => {
     const textos: string[] = [];
     for (const ruta of ["/", "/?pagina=2"]) {
       await page.goto(ruta);
+      // El listado llega un instante después del resto de la página: se espera a que aparezca.
+      await expect(tarjetas(page).first()).toBeVisible();
       textos.push(...(await tarjetas(page).allTextContents()));
     }
 

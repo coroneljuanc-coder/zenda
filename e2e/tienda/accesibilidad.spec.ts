@@ -31,6 +31,18 @@ test.describe("Accesibilidad WCAG 2.1 AA (ZTV-37)", () => {
     await revisar(page);
   });
 
+  test("ficha de producto (ZTV-13)", async ({ page }) => {
+    await page.goto("/producto/lampara-escritorio-led");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await revisar(page);
+  });
+
+  test("ficha de un producto agotado (ZTV-13)", async ({ page }) => {
+    await page.goto("/producto/teclado-mecanico-compacto");
+    await expect(page.getByText("Este producto no está disponible por ahora")).toBeVisible();
+    await revisar(page);
+  });
+
   test("página «No encontramos esta página»", async ({ page }) => {
     await page.goto("/abc");
     await revisar(page);

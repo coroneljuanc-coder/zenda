@@ -1,7 +1,13 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { obtenerBD } from "@/lib/bd";
 import { consultarCategoria, consultarCategoriasMenu, type CategoriaDetalle } from "./categorias";
-import { consultarPaginaProductos, type PaginaProductos } from "./productos";
+import {
+  consultarPaginaProductos,
+  consultarProducto,
+  consultarSlugsProductos,
+  type FichaProducto,
+  type PaginaProductos,
+} from "./productos";
 
 /**
  * Página del listado para la tienda, en caché unos minutos por número de página y categoría:
@@ -32,4 +38,20 @@ export async function listarSlugsCategorias(): Promise<string[]> {
   cacheLife("hours");
   cacheTag("categorias");
   return (await consultarCategoriasMenu(obtenerBD())).map((c) => c.slug);
+}
+
+/** Ficha de un producto activo por su slug (ZTV-13), en caché unos minutos como el listado. */
+export async function obtenerProducto(slug: string): Promise<FichaProducto | null> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("productos");
+  return consultarProducto(obtenerBD(), slug);
+}
+
+/** Slugs de los productos activos, para generar sus fichas al compilar. */
+export async function listarSlugsProductos(): Promise<string[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("productos");
+  return consultarSlugsProductos(obtenerBD());
 }
