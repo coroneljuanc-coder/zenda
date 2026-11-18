@@ -173,12 +173,19 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 ## Repositorio (GitHub)
 - Repositorio **público** `coroneljuanc-coder/zenda` (decisión del PO 2026-11-15: GitHub Free solo protege ramas en repositorios públicos). Nunca se suben credenciales.
 - `main` protegida: solo recibe cambios por pull request, también para administradores; sin force push ni borrado. El check "CI" se vuelve obligatorio al terminar ZTV-6.
-- Ramas `tipo/ZTV-##-descripcion`; el PO revisa e integra cada pull request.
+- Ramas `tipo/ZTV-##-descripcion`, que salen de `desarrollo` y vuelven a `desarrollo` por pull request.
+
+## Flujo del sprint y publicación (decisión del PO del 2026-11-18)
+- **`desarrollo`** acumula el trabajo del sprint. Claude integra ahí cada PR **sin pedir autorización**, siempre que el check "CI" esté en verde. Está protegida igual que `main` (solo por PR, con "CI" obligatorio).
+- **Ambiente de la Sprint Review:** la vista previa fija de `desarrollo`, `https://zenda-tienda-git-desarrollo-juan-8cce.vercel.app` (pide sesión en Vercel; base propia `preview/desarrollo` en Neon). Cumple el papel de UAT.
+- **Sprint Review:** Claude muestra cada historia en ese ambiente y el PO acepta o rechaza. Una historia rechazada se retira de `desarrollo` (revert) antes de publicar y vuelve al backlog.
+- **Publicación:** un solo PR `desarrollo` → `main` por sprint, que Claude integra **solo con la aprobación explícita del PO en la review** («Sí, publícalo»). Queda como la versión del sprint (D9) y es lo único que cambia producción.
+- Excepción: una corrección urgente de producción (vX.Y.1) va de una rama `fix/` a `main` con aprobación del PO y luego se lleva a `desarrollo`.
 
 ## Despliegue y ambientes (Vercel, aprobado 2026-11-15)
 - Proyectos Vercel Hobby: `zenda-tienda` (`apps/tienda`) y `zenda-notificaciones` (`apps/notificaciones`), con Next.js, Node 24 y la opción "omitir proyectos no afectados".
 - Producción: `https://zenda-tienda.vercel.app` y `https://zenda-notificaciones.vercel.app`. Solo cambian al integrar a `main`. Las vistas previas por PR exigen sesión en Vercel.
-- Ambientes: desarrollo local (`prisma dev`), CI (PostgreSQL temporal), vista previa por PR (rama propia de Neon, que se borra al cerrar el PR) y producción (rama `main` de Neon). El UAT/`staging` está diferido hasta que exista el flujo completo de compra (decisión del PO del 2026-11-16) y se retoma en la planeación del Sprint 3. Detalle en Confluence, página "Ambientes".
+- Ambientes: desarrollo local (`prisma dev`), CI (PostgreSQL temporal), vista previa por PR (rama propia de Neon, que se borra al cerrar el PR), **revisión del sprint** (vista previa fija de `desarrollo`, rama `preview/desarrollo` de Neon; adelanta el UAT que estaba diferido) y producción (rama `main` de Neon). Detalle en Confluence, página "Ambientes".
 
 ## Configuración de Jira (proyecto ZTV, team-managed)
 - Clave `ZTV`. Tablero: Por hacer → En curso → En pruebas → Listo.

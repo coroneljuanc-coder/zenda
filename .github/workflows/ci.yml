@@ -4,10 +4,11 @@
 name: CI
 
 on:
+  # main = producción; desarrollo = trabajo del sprint que el PO revisa en la Sprint Review.
   pull_request:
-    branches: [main]
+    branches: [main, desarrollo]
   push:
-    branches: [main]
+    branches: [main, desarrollo]
 
 concurrency:
   group: ci-${{ github.ref }}
