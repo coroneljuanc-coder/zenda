@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { ajustarPagina, estaAgotado, interpretarPagina, textoPrecio } from "./reglas";
+import {
+  ajustarPagina,
+  estaAgotado,
+  interpretarPagina,
+  stockTotal,
+  textoDisponibilidad,
+  textoPrecio,
+} from "./reglas";
 
 describe("estaAgotado (RN4)", () => {
   it("CAT-02-CP4 · variantes con stock 0 y 0 → agotado", () => {
@@ -98,5 +105,40 @@ describe("ajustarPagina (RN5)", () => {
 
   it("sin productos hay una sola página", () => {
     expect(ajustarPagina(5, 0)).toEqual({ pagina: 1, totalPaginas: 1 });
+  });
+});
+
+describe("textoDisponibilidad (RN2 de ZTV-13)", () => {
+  it("CAT-04-CP2 · 3 unidades → «¡Últimas 3 unidades!»", () => {
+    expect(textoDisponibilidad(3)).toBe("¡Últimas 3 unidades!");
+  });
+
+  it("CAT-04-CP3 · valores límite: 6 → «Disponible» y 5 → «¡Últimas 5 unidades!»", () => {
+    expect(textoDisponibilidad(6)).toBe("Disponible");
+    expect(textoDisponibilidad(5)).toBe("¡Últimas 5 unidades!");
+  });
+
+  it("CAT-04-CP4 · 0 unidades → «Agotado»", () => {
+    expect(textoDisponibilidad(0)).toBe("Agotado");
+  });
+
+  it("1 unidad → «¡Última unidad!» (singular)", () => {
+    expect(textoDisponibilidad(1)).toBe("¡Última unidad!");
+  });
+
+  it("muchas unidades no muestran el número exacto", () => {
+    expect(textoDisponibilidad(250)).toBe("Disponible");
+  });
+});
+
+describe("stockTotal", () => {
+  it("suma el stock de todas las variantes", () => {
+    expect(
+      stockTotal([
+        { stock: 0, precio: null },
+        { stock: 7, precio: null },
+        { stock: 3, precio: 10_000 },
+      ]),
+    ).toBe(10);
   });
 });

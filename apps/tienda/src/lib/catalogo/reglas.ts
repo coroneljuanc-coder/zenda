@@ -42,3 +42,19 @@ export function ajustarPagina(pagina: number, total: number, porPagina = PRODUCT
   const totalPaginas = Math.max(1, Math.ceil(total / porPagina));
   return { pagina: Math.min(Math.max(1, pagina), totalPaginas), totalPaginas };
 }
+
+/** Unidades disponibles de un producto: la suma del stock de sus variantes. */
+export function stockTotal(variantes: VarianteResumen[]): number {
+  return variantes.reduce((total, v) => total + v.stock, 0);
+}
+
+/**
+ * Texto de disponibilidad de la ficha (RN2 de ZTV-13): 0 → «Agotado»; de 1 a 5 → «¡Últimas N
+ * unidades!» (con 1, «¡Última unidad!»); más de 5 → «Disponible», sin mostrar el número exacto.
+ */
+export function textoDisponibilidad(unidades: number): string {
+  if (unidades <= 0) return "Agotado";
+  if (unidades === 1) return "¡Última unidad!";
+  if (unidades <= 5) return `¡Últimas ${unidades} unidades!`;
+  return "Disponible";
+}
