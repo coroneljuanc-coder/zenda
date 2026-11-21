@@ -6,7 +6,7 @@ test.describe("Página «No encontramos esta página» (ZTV-36)", () => {
   }) => {
     const respuesta = await page.goto("/abc");
     expect(respuesta?.status()).toBe(404);
-    await expect(page).toHaveTitle("Página no encontrada · Zenda");
+    await expect(page).toHaveTitle("Página no encontrada | Zenda");
     await expect(
       page.getByRole("heading", { level: 1, name: "No encontramos esta página" }),
     ).toBeVisible();

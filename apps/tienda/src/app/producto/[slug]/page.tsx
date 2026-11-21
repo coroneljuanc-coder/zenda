@@ -19,7 +19,7 @@ export async function generateStaticParams() {
   return (slugs.length > 0 ? slugs : ["sin-productos"]).map((slug) => ({ slug }));
 }
 
-/** SEO (ZTV-13): título «Producto · Zenda», descripción y vista previa con la primera foto. */
+/** SEO (ZTV-13): título «Producto | Zenda» (ZTV-57), descripción y vista previa con la primera foto. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const producto = await obtenerProducto((await params).slug);
   if (!producto) return {};
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: producto.nombre,
     description: producto.descripcion,
     openGraph: {
-      title: `${producto.nombre} · Zenda`,
+      title: `${producto.nombre} | Zenda`,
       description: producto.descripcion,
       type: "website",
       ...(foto ? { images: [{ url: foto.url, alt: foto.textoAlternativo }] } : {}),

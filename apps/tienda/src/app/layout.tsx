@@ -14,7 +14,7 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Zenda", template: "%s · Zenda" },
+  title: { default: "Zenda", template: "%s | Zenda" },
   description: "Zenda, tienda virtual con productos de todo tipo.",
 };
 

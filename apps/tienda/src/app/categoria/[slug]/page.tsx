@@ -32,7 +32,7 @@ export async function generateStaticParams() {
   return (slugs.length > 0 ? slugs : ["sin-categorias"]).map((slug) => ({ slug }));
 }
 
-/** SEO (ZTV-12): título «Hogar · Zenda» y la descripción de la categoría. */
+/** SEO (ZTV-12): título «Hogar | Zenda» (ZTV-57) y la descripción de la categoría. */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const categoria = await obtenerCategoria((await params).slug);
   if (!categoria) return {};
