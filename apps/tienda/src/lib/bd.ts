@@ -15,7 +15,11 @@ export function obtenerBD(): PrismaClient {
   if (!conexion) {
     throw new Error("DATABASE_URL no está configurada (ver apps/tienda/.env.example).");
   }
-  const cliente = new PrismaClient({ adapter: new PrismaPg({ connectionString: conexion }) });
+  // Pocas conexiones por proceso: cada función de Vercel y cada proceso de compilación abre las
+  // suyas, y la base local de `prisma dev` se cae si recibe demasiadas a la vez.
+  const cliente = new PrismaClient({
+    adapter: new PrismaPg({ connectionString: conexion, max: 3 }),
+  });
   global.prismaZenda = cliente;
   return cliente;
 }

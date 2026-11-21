@@ -3,7 +3,9 @@ import { expect, test, type Page } from "@playwright/test";
 // Datos de ejemplo: 21 productos cargados, 20 activos (la gorra está inactiva).
 // El orden exacto (más reciente primero) se prueba en la integración, con fechas controladas:
 // aquí depende de cuándo se cargó cada producto de ejemplo en la base de esa ejecución.
-const tarjetas = (page: Page) => page.locator('[data-prueba="tarjeta-producto"]');
+// Solo las visibles: Next.js deja la página anterior oculta en el documento para volver rápido.
+const tarjetas = (page: Page) =>
+  page.locator('[data-prueba="tarjeta-producto"]').filter({ visible: true });
 
 test.describe("Listado de productos (ZTV-11)", () => {
   test("CAT-02-CP1 · la página de inicio muestra 12 productos con foto, nombre y precio", async ({
@@ -15,6 +17,11 @@ test.describe("Listado de productos (ZTV-11)", () => {
 
     const primera = tarjetas(page).first();
     await expect(primera.getByRole("img")).toHaveAttribute("alt", /^Foto de ejemplo: /);
+    // FOT-CP1 (ZTV-56): foto WebP servida por el optimizador de imágenes de Next.js.
+    await expect(primera.getByRole("img")).toHaveAttribute(
+      "src",
+      /^\/_next\/image\?url=%2Fproductos%2F[a-z0-9-]+\.webp&/,
+    );
     await expect(primera.locator("p").nth(1)).toHaveText(/^(Desde )?\$ \d{1,3}(\.\d{3})*$/);
     await expect(primera).toHaveAttribute("href", /^\/producto\/[a-z0-9-]+$/);
   });
@@ -44,6 +51,8 @@ test.describe("Listado de productos (ZTV-11)", () => {
     const textos: string[] = [];
     for (const ruta of ["/", "/?pagina=2"]) {
       await page.goto(ruta);
+      // El listado llega un instante después del resto de la página: se espera a que aparezca.
+      await expect(tarjetas(page).first()).toBeVisible();
       textos.push(...(await tarjetas(page).allTextContents()));
     }
 
