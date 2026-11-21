@@ -1,6 +1,6 @@
 // Pruebas de integración de la carga de datos (ZTV-7): usan una base de datos PostgreSQL real.
 // - En GitHub Actions: un PostgreSQL temporal que se crea y se destruye en cada ejecución.
-// - En local: la base de `prisma dev` configurada en apps/tienda/.env.local.
+// - En local: la base de `npm run bd:iniciar` (ZTV-58) configurada en apps/tienda/.env.local.
 // Por seguridad, BORRAN los datos antes de cada prueba y solo corren contra una base en este computador (localhost).
 import { existsSync } from "node:fs";
 import { join } from "node:path";
