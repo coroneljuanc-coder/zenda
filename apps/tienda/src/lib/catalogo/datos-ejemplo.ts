@@ -2,7 +2,8 @@ import type { DatosCatalogo } from "./validacion";
 
 /**
  * Catálogo de ejemplo del MVP (ZTV-7, D6): productos ficticios, cargados con `npm run db:seed`.
- * Precios en COP con IVA incluido (D4). Las fotos son ilustraciones de ejemplo en public/productos/.
+ * Precios en COP con IVA incluido (D4). Las fotos de ejemplo están en public/productos/: fotos
+ * generadas con IA en formato WebP (ZTV-56), salvo la gorra inactiva, que conserva su ilustración SVG.
  * Casos especiales para las historias del catálogo:
  * - "teclado-mecanico-compacto" está agotado (todas sus variantes con stock 0).
  * - "botella-termica-acero" tiene variantes con precios distintos ("Desde $ 49.900").
@@ -11,8 +12,8 @@ import type { DatosCatalogo } from "./validacion";
 
 type Variante = DatosCatalogo["productos"][number]["variantes"][number];
 
-const foto = (slug: string, nombre: string) => [
-  { url: `/productos/${slug}.svg`, textoAlternativo: `Foto de ejemplo: ${nombre}` },
+const foto = (slug: string, nombre: string, formato: "webp" | "svg" = "webp") => [
+  { url: `/productos/${slug}.${formato}`, textoAlternativo: `Foto de ejemplo: ${nombre}` },
 ];
 
 const unica = (sku: string, stock: number): Variante[] => [{ sku, stock }];
@@ -98,7 +99,7 @@ export const DATOS_EJEMPLO = {
       categoria: "ropa",
       activo: false,
       variantes: unica("ROP-GOR-UNI", 2),
-      imagenes: foto("gorra-edicion-limitada", "Gorra edición limitada"),
+      imagenes: foto("gorra-edicion-limitada", "Gorra edición limitada", "svg"),
     },
     // ---------- Hogar ----------
     {

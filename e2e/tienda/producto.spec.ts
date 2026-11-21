@@ -74,7 +74,7 @@ test.describe("Ficha de producto (ZTV-13)", () => {
     await page.goto("/producto/lampara-escritorio-led");
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       "content",
-      /\/productos\/lampara-escritorio-led\.svg$/,
+      /\/productos\/lampara-escritorio-led\.webp$/,
     );
   });
 

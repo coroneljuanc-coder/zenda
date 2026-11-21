@@ -85,6 +85,19 @@ describe("carga de datos de ejemplo en PostgreSQL", () => {
     ).toBe(3);
   });
 
+  it("al repetir la carga actualiza la dirección de la foto (FOT-CP4, ZTV-56)", async () => {
+    await sembrarCatalogo(prisma, DATOS_EJEMPLO);
+    const lampara = { producto: { slug: "lampara-escritorio-led" } };
+    // Simula una base cargada antes de ZTV-56, cuando las fotos eran ilustraciones SVG.
+    await prisma.imagenProducto.updateMany({
+      where: lampara,
+      data: { url: "/productos/lampara-escritorio-led.svg" },
+    });
+    await sembrarCatalogo(prisma, DATOS_EJEMPLO);
+    const fotos = await prisma.imagenProducto.findMany({ where: lampara });
+    expect(fotos.map((f) => f.url)).toEqual(["/productos/lampara-escritorio-led.webp"]);
+  });
+
   it("con un dato inválido falla y no guarda nada (S0-03-CP4)", async () => {
     const datos = structuredClone(DATOS_EJEMPLO);
     datos.productos[20].variantes[0].stock = -1;
