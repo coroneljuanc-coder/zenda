@@ -23,7 +23,9 @@ test.describe("Ficha de producto (ZTV-13)", () => {
     await expect(
       page.getByText("$ 89.900", { exact: true }).filter({ visible: true }),
     ).toBeVisible();
-    await expect(page.locator('[data-prueba="disponibilidad"]')).toHaveText("Disponible");
+    await expect(
+      page.locator('[data-prueba="disponibilidad"]').filter({ visible: true }),
+    ).toHaveText("Disponible");
     await expect(
       page.getByText("Lámpara con brazo flexible, tres tonos de luz y puerto USB."),
     ).toBeVisible();
@@ -46,14 +48,20 @@ test.describe("Ficha de producto (ZTV-13)", () => {
     page,
   }) => {
     await page.goto("/producto/teclado-mecanico-compacto");
-    await expect(page.locator('[data-prueba="disponibilidad"]')).toHaveText("Agotado");
-    await expect(page.getByText("Este producto no está disponible por ahora")).toBeVisible();
+    await expect(
+      page.locator('[data-prueba="disponibilidad"]').filter({ visible: true }),
+    ).toHaveText("Agotado");
+    await expect(
+      page.getByText("Este producto no está disponible por ahora").filter({ visible: true }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Agregar al carrito" })).toHaveCount(0);
   });
 
   test("RN4 · variantes con precios distintos muestran «Desde»", async ({ page }) => {
     await page.goto("/producto/botella-termica-acero");
-    await expect(page.getByText("Desde $ 49.900", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Desde $ 49.900", { exact: true }).filter({ visible: true }),
+    ).toBeVisible();
   });
 
   test("CAT-04-CP5 · RN3 · un producto inactivo muestra la página 404", async ({ page }) => {

@@ -7,12 +7,17 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 const grupo = (page: Page, titulo: "Talla" | "Color") =>
   page.getByRole("group", { name: new RegExp(`^${titulo}`) });
 
-/** Toca la opción como lo haría una persona: sobre su etiqueta, no sobre el radio oculto. */
-const elegir = (grupoOpciones: Locator, nombre: string) =>
-  grupoOpciones
-    .locator("label")
-    .filter({ has: grupoOpciones.page().getByRole("radio", { name: nombre, exact: true }) })
-    .click();
+/**
+ * Toca la opción como lo haría una persona, sobre su etiqueta. Primero espera a que la ficha esté
+ * lista: mientras carga, las opciones están deshabilitadas (ZTV-73) y un toque no haría nada.
+ */
+const elegir = async (grupoOpciones: Locator, nombre: string) => {
+  const radio = grupoOpciones.getByRole("radio", { name: nombre, exact: true });
+  await expect(radio).toBeEnabled();
+  // `has` busca dentro de cada etiqueta: el radio se describe desde la página, no desde el grupo.
+  const radioEnEtiqueta = grupoOpciones.page().getByRole("radio", { name: nombre, exact: true });
+  await grupoOpciones.locator("label").filter({ has: radioEnEtiqueta }).click();
+};
 
 const visible = (page: Page, prueba: string) =>
   page.locator(`[data-prueba="${prueba}"]`).filter({ visible: true });
@@ -93,9 +98,10 @@ test.describe("Talla y color en la ficha (ZTV-15)", () => {
     test.skip(!isMobile, "El tamaño mínimo para el dedo se revisa en celular.");
     await page.goto("/producto/camiseta-basica-algodon");
     const opcion = grupo(page, "Talla").locator("label span").first();
-    await expect(opcion).toBeVisible(); // medir antes de que se dibuje devuelve «sin caja»
-    const caja = await opcion.boundingBox();
-    expect(caja?.width).toBeGreaterThanOrEqual(44);
-    expect(caja?.height).toBeGreaterThanOrEqual(44);
+    // Se mide hasta que la ficha termina de armarse: mientras carga, el área de compra se
+    // reemplaza una vez y una medida a mitad de camino devuelve «sin caja».
+    const medida = async () => (await opcion.boundingBox()) ?? { width: 0, height: 0 };
+    await expect.poll(async () => (await medida()).width).toBeGreaterThanOrEqual(44);
+    await expect.poll(async () => (await medida()).height).toBeGreaterThanOrEqual(44);
   });
 });
