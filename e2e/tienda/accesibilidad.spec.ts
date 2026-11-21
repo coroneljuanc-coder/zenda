@@ -55,6 +55,21 @@ test.describe("Accesibilidad WCAG 2.1 AA (ZTV-37)", () => {
     await revisar(page);
   });
 
+  test("carrito vacío (ZTV-17)", async ({ page }) => {
+    await page.goto("/carrito");
+    await expect(page.getByText("Tu carrito está vacío")).toBeVisible();
+    await revisar(page);
+  });
+
+  test("carrito con un producto y su resumen (ZTV-17)", async ({ page }) => {
+    await page.goto("/producto/cargador-rapido-usb-c-30w");
+    await page.getByRole("button", { name: "Agregar al carrito" }).click();
+    await expect(page.getByText(/^Agregaste 1 × /)).toBeVisible();
+    await page.goto("/carrito");
+    await expect(page.locator('[data-prueba="subtotal"]')).toHaveText("$ 69.900");
+    await revisar(page);
+  });
+
   test("ficha de un producto agotado (ZTV-13)", async ({ page }) => {
     await page.goto("/producto/teclado-mecanico-compacto");
     await expect(
