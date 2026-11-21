@@ -22,7 +22,7 @@ test.describe("Productos por categoría (ZTV-12)", () => {
   }) => {
     await entrarAHogarDesdeElMenu(page, isMobile);
 
-    await expect(page).toHaveTitle("Hogar · Zenda");
+    await expect(page).toHaveTitle("Hogar | Zenda");
     await expect(page.getByRole("heading", { level: 1, name: "Hogar" })).toBeVisible();
     await expect(page.getByText("Cocina, descanso y decoración.")).toBeVisible();
 

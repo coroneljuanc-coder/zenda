@@ -16,7 +16,7 @@ test.describe("Ficha de producto (ZTV-13)", () => {
       .click();
     await expect(page).toHaveURL(/\/producto\/lampara-escritorio-led$/, { timeout: 20_000 });
 
-    await expect(page).toHaveTitle("Lámpara de escritorio LED · Zenda");
+    await expect(page).toHaveTitle("Lámpara de escritorio LED | Zenda");
     await expect(
       page.getByRole("heading", { level: 1, name: "Lámpara de escritorio LED" }),
     ).toBeVisible();

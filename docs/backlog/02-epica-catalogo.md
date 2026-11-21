@@ -255,7 +255,7 @@ Escenario 3: Categoría inexistente (error)
 
 ### Requisitos no funcionales
 - Responsive, rendimiento y accesibilidad iguales a CAT-02.
-- SEO: título de la página con la categoría y "Zenda" (hoy "Hogar · Zenda"; el separador «·» o «|» está pendiente de decisión del PO) y meta descripción con la descripción de la categoría.
+- SEO: título de la página con la categoría y "Zenda" ("Hogar | Zenda", decisión del PO en la Sprint Review del 2026-11-20, ZTV-57) y meta descripción con la descripción de la categoría.
 
 ### Diseño / Interfaz
 - Ruta de navegación (breadcrumb): "Inicio › Hogar".
@@ -350,7 +350,7 @@ Escenario 4: Producto inexistente o inactivo (error)
 
 ### Reglas de negocio
 - RN1: Se muestran todas las fotos del producto, en el orden del campo `orden`.
-- RN2: Disponibilidad: stock 0 → "Agotado"; de 1 a 5 → "¡Últimas N unidades!"; más de 5 → "Disponible". No se muestra el número exacto cuando es mayor que 5. Con 1 unidad hoy se muestra "¡Última unidad!" (en singular), pendiente de confirmación del PO.
+- RN2: Disponibilidad: stock 0 → "Agotado"; de 1 a 5 → "¡Últimas N unidades!"; más de 5 → "Disponible". No se muestra el número exacto cuando es mayor que 5. Con 1 unidad se muestra "¡Última unidad!" (en singular; confirmado por el PO en la Sprint Review del 2026-11-20).
 - RN3: Un producto inactivo no es accesible por URL.
 - RN4: El precio sigue RN2 y RN3 de CAT-02.
 
@@ -358,7 +358,7 @@ Escenario 4: Producto inexistente o inactivo (error)
 - Responsive: en celular, la galería ocupa todo el ancho y se desliza con el dedo; en escritorio, la galería va a la izquierda y la información a la derecha.
 - Accesibilidad: las miniaturas de la galería son botones con texto alternativo; el estado de disponibilidad se anuncia con texto (no solo con color).
 - Rendimiento: la primera foto se carga con prioridad; las demás, de forma diferida.
-- SEO: título con el nombre del producto y "Zenda" (hoy "Nombre · Zenda"; el separador «·» o «|» está pendiente de decisión del PO) y vista previa para redes sociales (Open Graph) con la primera foto.
+- SEO: título con el nombre del producto y "Zenda" ("Nombre | Zenda", decisión del PO en la Sprint Review del 2026-11-20, ZTV-57) y vista previa para redes sociales (Open Graph) con la primera foto.
 
 ### Diseño / Interfaz
 - Breadcrumb "Inicio › Categoría › Producto".
