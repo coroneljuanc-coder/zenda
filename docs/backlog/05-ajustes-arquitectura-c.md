@@ -32,7 +32,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 0
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO el 2026-11-16; Sprint 0, versión v0.1.0)
 
 ### Historia
 Como equipo de desarrollo,
@@ -105,12 +105,12 @@ No aplica (las bases de datos se crean en ZTV-7 para la tienda y en COM-06 para 
 - [x] Aprobada por el Product Owner (2026-11-15)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `main`
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner
 
 ---
 
