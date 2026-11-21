@@ -116,7 +116,8 @@ Lee **Categoria** (nombre, slug, orden).
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 1
-**Estado:** Por hacer
+**Versión:** v0.2.0
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-20)
 
 ### Historia
 Como visitante,
@@ -188,9 +189,10 @@ Lee **Producto** (nombre, slug, precio, activo, creadoEn), **VarianteProducto** 
 | CAT-02-CP6 | 4 | Integración | BD sin productos activos | Mensaje de catálogo vacío |
 
 ### Notas técnicas
-- Ruta `src/app/page.tsx` (Server Component); consulta con Prisma usando `skip/take`.
-- Lógica pura en `src/lib/catalogo.ts`: `estaAgotado()`, `precioDesde()`; probada con Vitest.
-- `next/image` para optimizar las fotos.
+- Ruta `src/app/page.tsx` con el listado dentro de `Suspense`; consulta con Prisma usando `skip/take` en `src/lib/catalogo/productos.ts`, guardada en caché unos minutos (`src/lib/catalogo/listado.ts`).
+- Lógica pura en `src/lib/catalogo/reglas.ts`: `estaAgotado()`, `textoPrecio()` y la paginación; probada con Vitest.
+- Componentes `TarjetaProducto`, `CuadriculaProductos` y `Paginacion`. `next/image` optimiza las fotos (WebP desde ZTV-56).
+- PR: #19.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
@@ -198,15 +200,15 @@ Lee **Producto** (nombre, slug, precio, activo, creadoEn), **VarianteProducto** 
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (planeación del Sprint 1, 2026-11-16)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` (a `main` en la publicación del sprint)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (ambiente de revisión; producción al publicar v0.2.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-20)
 
 ---
 
@@ -219,7 +221,8 @@ Lee **Producto** (nombre, slug, precio, activo, creadoEn), **VarianteProducto** 
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 1
-**Estado:** Por hacer
+**Versión:** v0.2.0
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-20)
 
 ### Historia
 Como visitante,
@@ -231,9 +234,9 @@ Zenda vende productos de todo tipo. Sin categorías, el listado se vuelve difíc
 
 ### Criterios de aceptación
 Escenario 1: Categoría con productos (camino feliz)
-  Dado que la categoría "Hogar" tiene 6 productos activos
+  Dado que la categoría "Hogar" tiene 4 productos activos (corregido: decía 6; el seed tiene 4)
   Cuando toco "Hogar" en el menú
-  Entonces voy a `/categoria/hogar`, veo el título "Hogar", su descripción y solo esos 6 productos
+  Entonces voy a `/categoria/hogar`, veo el título "Hogar", su descripción y solo esos 4 productos
 
 Escenario 2: Categoría sin productos (alterno)
   Dado una categoría sin productos activos
@@ -252,7 +255,7 @@ Escenario 3: Categoría inexistente (error)
 
 ### Requisitos no funcionales
 - Responsive, rendimiento y accesibilidad iguales a CAT-02.
-- SEO: título de la página "Hogar | Zenda" y meta descripción con la descripción de la categoría.
+- SEO: título de la página con la categoría y "Zenda" (hoy "Hogar · Zenda"; el separador «·» o «|» está pendiente de decisión del PO) y meta descripción con la descripción de la categoría.
 
 ### Diseño / Interfaz
 - Ruta de navegación (breadcrumb): "Inicio › Hogar".
@@ -275,14 +278,16 @@ Lee **Categoria** (nombre, slug, descripcion) y **Producto** filtrado por `categ
 ### Casos de prueba
 | ID caso | Escenario | Tipo | Datos de prueba | Resultado esperado |
 |---|---|---|---|---|
-| CAT-03-CP1 | 1 | E2E | Clic en "Hogar" (seed) | Solo productos de Hogar; breadcrumb correcto |
+| CAT-03-CP1 | 1 | E2E | Clic en "Hogar" (seed) | Solo los 4 productos de Hogar; breadcrumb correcto |
 | CAT-03-CP2 | 1 | Integración | Consulta por categoría | No aparecen productos inactivos ni de otras categorías |
 | CAT-03-CP3 | 2 | Integración | Categoría de prueba vacía | Mensaje de vacío y enlace |
 | CAT-03-CP4 | 3 | E2E | `/categoria/no-existe` | Página 404 |
 
 ### Notas técnicas
-- Ruta `src/app/categoria/[slug]/page.tsx`; `notFound()` si el slug no existe.
-- Se reutiliza el componente `GrillaProductos` creado en CAT-02.
+- Ruta `src/app/categoria/[slug]/page.tsx`; `notFound()` si el slug no existe. Las categorías conocidas se generan por adelantado (`generateStaticParams`).
+- Con la precarga parcial de Next.js 16, la primera visita a una categoría desconocida responde 200 con la página 404 y la marca `noindex`; las siguientes responden 404.
+- Se reutiliza `CuadriculaProductos` de CAT-02. El enlace activo del menú (`EnlaceCategoria`) usa `aria-current="page"`.
+- PR: #21.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
@@ -290,15 +295,15 @@ Lee **Categoria** (nombre, slug, descripcion) y **Producto** filtrado por `categ
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (planeación del Sprint 1, 2026-11-16)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` (a `main` en la publicación del sprint)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (ambiente de revisión; producción al publicar v0.2.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-20)
 
 ---
 
@@ -311,7 +316,8 @@ Lee **Categoria** (nombre, slug, descripcion) y **Producto** filtrado por `categ
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 1
-**Estado:** Por hacer
+**Versión:** v0.2.0
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-20)
 
 ### Historia
 Como visitante,
@@ -344,7 +350,7 @@ Escenario 4: Producto inexistente o inactivo (error)
 
 ### Reglas de negocio
 - RN1: Se muestran todas las fotos del producto, en el orden del campo `orden`.
-- RN2: Disponibilidad: stock 0 → "Agotado"; de 1 a 5 → "¡Últimas N unidades!"; más de 5 → "Disponible". No se muestra el número exacto cuando es mayor que 5.
+- RN2: Disponibilidad: stock 0 → "Agotado"; de 1 a 5 → "¡Últimas N unidades!"; más de 5 → "Disponible". No se muestra el número exacto cuando es mayor que 5. Con 1 unidad hoy se muestra "¡Última unidad!" (en singular), pendiente de confirmación del PO.
 - RN3: Un producto inactivo no es accesible por URL.
 - RN4: El precio sigue RN2 y RN3 de CAT-02.
 
@@ -352,7 +358,7 @@ Escenario 4: Producto inexistente o inactivo (error)
 - Responsive: en celular, la galería ocupa todo el ancho y se desliza con el dedo; en escritorio, la galería va a la izquierda y la información a la derecha.
 - Accesibilidad: las miniaturas de la galería son botones con texto alternativo; el estado de disponibilidad se anuncia con texto (no solo con color).
 - Rendimiento: la primera foto se carga con prioridad; las demás, de forma diferida.
-- SEO: título "Nombre del producto | Zenda" y vista previa para redes sociales (Open Graph) con la primera foto.
+- SEO: título con el nombre del producto y "Zenda" (hoy "Nombre · Zenda"; el separador «·» o «|» está pendiente de decisión del PO) y vista previa para redes sociales (Open Graph) con la primera foto.
 
 ### Diseño / Interfaz
 - Breadcrumb "Inicio › Categoría › Producto".
@@ -387,8 +393,10 @@ Lee **Producto**, **VarianteProducto** (stock), **ImagenProducto** y **Categoria
 | CAT-04-CP6 | 1 | E2E | Celular 390×844 | La galería se desliza con gestos |
 
 ### Notas técnicas
-- Ruta `src/app/producto/[slug]/page.tsx` con `generateMetadata` para SEO.
-- `textoDisponibilidad(stock)` en `src/lib/catalogo.ts`.
+- Ruta `src/app/producto/[slug]/page.tsx` con `generateMetadata` para SEO y vista previa para redes.
+- `textoDisponibilidad(stock)` y `stockTotal()` en `src/lib/catalogo/reglas.ts`; consulta `consultarProducto()` en `src/lib/catalogo/productos.ts`.
+- Componente `Galeria`: carrusel deslizable en celular; foto principal con miniaturas en escritorio.
+- PR: #22.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
@@ -396,15 +404,111 @@ Lee **Producto**, **VarianteProducto** (stock), **ImagenProducto** y **Categoria
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (planeación del Sprint 1, 2026-11-16)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` (a `main` en la publicación del sprint)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (ambiente de revisión; producción al publicar v0.2.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-20)
+
+---
+
+## ZTV-56 · Mostrar fotos realistas en los productos de ejemplo
+
+**ID:** ZTV-56
+**Título:** Mostrar fotos realistas en los productos de ejemplo
+**Épica:** E1 – Catálogo
+**Tipo:** Historia
+**Prioridad (MoSCoW):** Should
+**Estimación:** 2
+**Sprint:** 1 (ajuste pedido por el PO en la Sprint Review del 2026-11-20)
+**Versión:** v0.2.0
+**Estado:** Hecho (aceptada por el PO el 2026-11-20)
+
+### Historia
+Como visitante,
+quiero ver fotos realistas de cada producto,
+para hacerme una idea de cómo es antes de comprarlo.
+
+### Contexto
+Los productos de ejemplo usaban ilustraciones planas (SVG). En la Sprint Review el PO pidió fotos generadas con IA para que la tienda se vea más real mientras llegan las fotos de verdad. Deben seguir la dirección visual «Vitrina» y no verse «hechas por IA».
+
+### Criterios de aceptación
+Escenario 1: Fotos en el catálogo (camino feliz)
+  Dado que abro el inicio, una categoría o una ficha
+  Cuando carga la página
+  Entonces cada producto muestra su foto realista sobre fondo gris claro, con el texto alternativo «Foto de ejemplo: [nombre]»
+
+Escenario 2: Desde el celular (alterno)
+  Dado que entro desde un celular
+  Cuando carga el listado
+  Entonces las fotos llegan en tamaño reducido y optimizado (WebP/AVIF), sin deformarse (cuadradas)
+
+Escenario 3: Foto que no carga (error)
+  Dado que una foto no se puede cargar
+  Cuando se muestra la tarjeta
+  Entonces el espacio cuadrado se mantiene, se lee el texto alternativo y la página no se rompe
+
+### Reglas de negocio
+- RN1: Una foto por producto, cuadrada (1:1), producto solo, sin texto, logos ni marcas reales.
+- RN2: Estilo «Vitrina»: luz de estudio suave, fondo gris claro (#F2F2F2), sin degradados ni escenas recargadas.
+- RN3: El texto alternativo sigue diciendo «Foto de ejemplo», porque no es el producto real.
+- RN4: El costo sale del saldo gratuito de créditos; cualquier gasto adicional lo aprueba el PO.
+
+### Requisitos no funcionales
+- Rendimiento: cada foto pesa menos de 150 KB en el repositorio y Next.js la sirve optimizada según la pantalla.
+- Accesibilidad: WCAG 2.1 AA (pruebas axe en verde).
+- Responsive: celular, tablet y escritorio.
+
+### Diseño / Interfaz
+Sin cambios de diseño: solo cambia la imagen de la tarjeta, la galería de la ficha y la vista previa para redes sociales.
+
+### Notificaciones y correos
+No aplica.
+
+### Datos
+**ImagenProducto.url** pasa de `/productos/[slug].svg` a `/productos/[slug].webp`. La carga de datos de ejemplo actualiza la dirección en bases existentes. La gorra inactiva conserva su ilustración SVG.
+
+### Dependencias
+- CAT-02, CAT-03, CAT-04.
+- Servicio de generación de imágenes Higgsfield (saldo gratuito).
+
+### Fuera de alcance
+- Varias fotos por producto, fotos reales, zoom y subir fotos desde un panel.
+
+### Casos de prueba
+| ID caso | Escenario | Tipo | Datos de prueba | Resultado esperado |
+|---|---|---|---|---|
+| FOT-CP1 | 1 y 2 | E2E | Inicio | Tarjetas con foto WebP servida por el optimizador de Next.js y alt «Foto de ejemplo: …» |
+| FOT-CP2 | 1 | E2E | lampara-escritorio-led | La vista previa para redes (`og:image`) termina en `.webp` |
+| FOT-CP3 | 1 | E2E (axe) | Inicio, categoría y ficha | Sin violaciones WCAG 2.1 AA |
+| FOT-CP4 | Datos | Integración | Base con dirección `.svg` | Al repetir la carga queda `.webp` |
+| FOT-CP5 | 1 | Aceptación | Ambiente de revisión | El PO aprueba el estilo |
+
+### Notas técnicas
+- Modelo Z Image (0,15 créditos por foto), elegido por el PO frente a Seedream 5.0 Flash tras una prueba con la lámpara. Gasto total: 3,80 créditos.
+- 20 fotos WebP de 900 px (6 a 55 KB) en `apps/tienda/public/productos/`. Se repitieron el champú (traía un «55%» grabado) y las brochas (estuche cortado); al cargador se le neutralizó el fondo azulado.
+- `foto(slug, nombre, formato)` en `datos-ejemplo.ts`; `TarjetaProducto` y `Galeria` solo desactivan la optimización para SVG.
+- PR: #24.
+
+### Definición de Listo (DoR)
+- [x] Historia y contexto claros
+- [x] Criterios de aceptación completos (3 escenarios)
+- [x] Reglas de negocio definidas
+- [x] Estimada en 8 puntos o menos
+- [x] Dependencias identificadas
+- [x] Aprobada por el Product Owner (2026-11-20)
+
+### Definición de Terminado (DoD)
+- [x] Código en GitHub, revisado e integrado a `desarrollo` (a `main` en la publicación del sprint)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (ambiente de revisión; producción al publicar v0.2.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-20)
 
 ---
 
