@@ -22,19 +22,29 @@ npm run dev
 
 ### Base de datos local (una sola vez)
 
-La tienda usa PostgreSQL. En tu equipo se usa `prisma dev`, una base local y gratuita que no necesita cuentas:
+La tienda usa PostgreSQL. En tu equipo corre un PostgreSQL 17 local (el mismo del CI), gratuito y sin cuentas; los binarios llegan con `npm install` (paquete `embedded-postgres`). Desde la raíz:
 
 ```bash
-cd apps/tienda
-npx prisma dev -n zenda --detach   # arranca la base local y muestra su URL "TCP"
+npm run bd:iniciar   # la crea la primera vez y la arranca; muestra las dos URL
 ```
 
-Copia `.env.example` como `apps/tienda/.env.local` y pega ahí esa URL (`DATABASE_URL`) y la de la base sombra (`SHADOW_DATABASE_URL`, mismo texto con el puerto siguiente). Luego, desde la raíz:
+Copia `.env.example` como `apps/tienda/.env.local` y pega ahí las dos URL que mostró (`DATABASE_URL` y `SHADOW_DATABASE_URL`). Luego:
 
 ```bash
 npm run db:migrar -w tienda   # crea las tablas
 npm run db:seed               # carga el catálogo de ejemplo (se puede repetir sin duplicar)
 ```
+
+Los datos quedan en `.bd-local/` (ignorada por Git). La base solo acepta conexiones de este computador.
+
+| Comando                | Para qué                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `npm run bd:iniciar`   | Arranca la base local (si ya está arrancada, no hace nada).                     |
+| `npm run bd:estado`    | Dice si está arrancada.                                                         |
+| `npm run bd:reiniciar` | La detiene y la vuelve a arrancar. **Si algo falla con la base, empieza aquí.** |
+| `npm run bd:detener`   | La detiene.                                                                     |
+
+Para empezar de cero: `npm run bd:detener`, borra la carpeta `.bd-local/` y vuelve a `npm run bd:iniciar`, `db:migrar` y `db:seed`.
 
 - Tienda: http://localhost:3000
 - Servicio de Notificaciones: http://localhost:3001/api/salud

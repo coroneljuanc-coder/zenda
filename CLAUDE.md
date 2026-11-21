@@ -185,7 +185,7 @@ Flujo del MVP: `docs/diagramas/flujo-mvp.drawio` (fuente editable en draw.io) y 
 ## Despliegue y ambientes (Vercel, aprobado 2026-11-15)
 - Proyectos Vercel Hobby: `zenda-tienda` (`apps/tienda`) y `zenda-notificaciones` (`apps/notificaciones`), con Next.js, Node 24 y la opción "omitir proyectos no afectados".
 - Producción: `https://zenda-tienda.vercel.app` y `https://zenda-notificaciones.vercel.app`. Solo cambian al integrar a `main`. Las vistas previas por PR exigen sesión en Vercel.
-- Ambientes: desarrollo local (`prisma dev`), CI (PostgreSQL temporal), vista previa por PR (rama propia de Neon, que se borra al cerrar el PR), **revisión del sprint** (vista previa fija de `desarrollo`, rama `preview/desarrollo` de Neon; adelanta el UAT que estaba diferido) y producción (rama `main` de Neon). Detalle en Confluence, página "Ambientes".
+- Ambientes: desarrollo local (PostgreSQL 17 en el computador, `npm run bd:iniciar`; reemplazó a `prisma dev` en ZTV-58), CI (PostgreSQL temporal), vista previa por PR (rama propia de Neon, que se borra al cerrar el PR), **revisión del sprint** (vista previa fija de `desarrollo`, rama `preview/desarrollo` de Neon; adelanta el UAT que estaba diferido) y producción (rama `main` de Neon). Detalle en Confluence, página "Ambientes".
 
 ## Configuración de Jira (proyecto ZTV, team-managed)
 - Clave `ZTV`. Tablero: Por hacer → En curso → En pruebas → Listo.
