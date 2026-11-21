@@ -17,6 +17,11 @@ test.describe("Listado de productos (ZTV-11)", () => {
 
     const primera = tarjetas(page).first();
     await expect(primera.getByRole("img")).toHaveAttribute("alt", /^Foto de ejemplo: /);
+    // FOT-CP1 (ZTV-56): foto WebP servida por el optimizador de imágenes de Next.js.
+    await expect(primera.getByRole("img")).toHaveAttribute(
+      "src",
+      /^\/_next\/image\?url=%2Fproductos%2F[a-z0-9-]+\.webp&/,
+    );
     await expect(primera.locator("p").nth(1)).toHaveText(/^(Desde )?\$ \d{1,3}(\.\d{3})*$/);
     await expect(primera).toHaveAttribute("href", /^\/producto\/[a-z0-9-]+$/);
   });
