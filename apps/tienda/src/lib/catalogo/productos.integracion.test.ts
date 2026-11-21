@@ -204,7 +204,32 @@ describe("consultarProducto (ZTV-13)", () => {
         { url: "/productos/producto-01.svg", textoAlternativo: "Foto de producto-01" },
         { url: "/productos/producto-01-2.svg", textoAlternativo: "Segunda foto" },
       ],
+      // ZTV-15: variantes en orden de SKU, sin talla ni color, con el precio del producto (RN1).
+      variantes: [
+        expect.objectContaining({
+          sku: "producto-01-0",
+          talla: null,
+          color: null,
+          stock: 2,
+          precio: 89_900,
+        }),
+        expect.objectContaining({
+          sku: "producto-01-1",
+          talla: null,
+          color: null,
+          stock: 1,
+          precio: 89_900,
+        }),
+      ],
     });
+  });
+
+  it("ZTV-15 · RN1 · una variante con precio propio lo conserva en la ficha", async () => {
+    const categoria = await crearCategoria();
+    await crearProducto(categoria, 1, { stocks: [4], precio: 59_900 });
+    await bd.varianteProducto.update({ where: { sku: "producto-01-0" }, data: { precio: 49_900 } });
+    const ficha = await consultarProducto(bd, "producto-01");
+    expect(ficha?.variantes).toEqual([expect.objectContaining({ precio: 49_900 })]);
   });
 
   it("escenario 3 · un producto sin unidades queda agotado", async () => {
