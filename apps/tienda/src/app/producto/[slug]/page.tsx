@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { CompraProducto, CompraProductoConUrl } from "@/components/catalogo/CompraProducto";
 import { Galeria } from "@/components/catalogo/Galeria";
 import { listarSlugsProductos, obtenerProducto } from "@/lib/catalogo/listado";
 
@@ -41,8 +43,17 @@ export default async function PaginaProducto({ params }: Props) {
   const producto = await obtenerProducto((await params).slug);
   if (!producto) notFound();
 
-  const { nombre, descripcion, textoPrecio, disponibilidad, agotado, categoria, imagenes } =
-    producto;
+  const {
+    nombre,
+    descripcion,
+    textoPrecio,
+    disponibilidad,
+    agotado,
+    categoria,
+    imagenes,
+    variantes,
+  } = producto;
+  const compra = { variantes, textoPrecio, disponibilidad, agotado };
 
   return (
     <>
@@ -71,39 +82,18 @@ export default async function PaginaProducto({ params }: Props) {
 
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">{nombre}</h1>
-          <p className="mt-3 text-2xl font-extrabold">{textoPrecio}</p>
-          {/* La disponibilidad se dice con palabras, no solo con color (accesibilidad). */}
-          <p
-            className={`mt-2 inline-block px-2 py-1 text-sm ${agotado ? "bg-tinta text-blanco" : "bg-superficie"}`}
-            data-prueba="disponibilidad"
-          >
-            {disponibilidad}
-          </p>
-          <p className="mt-6 max-w-prose">{descripcion}</p>
+          {/* Precio, disponibilidad, talla y color (ZTV-15) y botón de compra. Mientras se lee
+              la dirección (?variante=), se muestra sin nada elegido. */}
+          <Suspense fallback={<CompraProducto {...compra} />}>
+            <CompraProductoConUrl {...compra} />
+          </Suspense>
+          <p className="mt-8 max-w-prose">{descripcion}</p>
           <p className="mt-4 text-sm text-gris">
             Categoría:{" "}
             <Link href={`/categoria/${categoria.slug}`} className="underline underline-offset-4">
               {categoria.nombre}
             </Link>
           </p>
-
-          {/* Área de compra: el botón se activa con ZTV-16 (agregar al carrito). */}
-          <div className="mt-8 border-t border-linea pt-6">
-            {agotado ? (
-              <p className="font-medium">Este producto no está disponible por ahora</p>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  disabled
-                  className="min-h-12 w-full bg-superficie px-6 font-medium text-gris md:w-auto"
-                >
-                  Agregar al carrito
-                </button>
-                <p className="mt-2 text-sm text-gris">Próximamente</p>
-              </>
-            )}
-          </div>
         </div>
       </div>
     </>

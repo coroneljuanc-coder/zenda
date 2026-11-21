@@ -38,8 +38,8 @@ test.describe("Ficha de producto (ZTV-13)", () => {
     await expect(
       page.getByRole("img", { name: /Lámpara de escritorio LED/ }).first(),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Agregar al carrito" })).toBeDisabled();
-    await expect(page.getByText("Próximamente")).toBeVisible();
+    // Desde ZTV-15 el botón está activo: primero pide elegir el color de la lámpara.
+    await expect(page.getByRole("button", { name: "Agregar al carrito" })).toBeEnabled();
   });
 
   test("escenario 3 · un producto agotado muestra «Agotado» y no deja comprar", async ({

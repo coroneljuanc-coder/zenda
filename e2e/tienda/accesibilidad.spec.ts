@@ -37,6 +37,15 @@ test.describe("Accesibilidad WCAG 2.1 AA (ZTV-37)", () => {
     await revisar(page);
   });
 
+  test("ficha con talla y color, mostrando los avisos de lo que falta (ZTV-15)", async ({
+    page,
+  }) => {
+    await page.goto("/producto/camiseta-basica-algodon");
+    await page.getByRole("button", { name: "Agregar al carrito" }).click();
+    await expect(page.getByText("Selecciona una talla")).toBeVisible();
+    await revisar(page);
+  });
+
   test("ficha de un producto agotado (ZTV-13)", async ({ page }) => {
     await page.goto("/producto/teclado-mecanico-compacto");
     await expect(page.getByText("Este producto no está disponible por ahora")).toBeVisible();
