@@ -14,7 +14,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 2
 **Sprint:** 0
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO el 2026-11-16; Sprint 0, versión v0.1.0)
 
 ### Historia
 Como equipo de desarrollo,
@@ -87,12 +87,12 @@ No aplica.
 - [x] Aprobada por el Product Owner (2026-11-15)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `main`
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner
 
 ---
 
@@ -105,7 +105,7 @@ No aplica.
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 0
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO el 2026-11-16; Sprint 0, versión v0.1.0)
 
 ### Historia
 Como Product Owner,
@@ -179,12 +179,12 @@ No aplica.
 - [x] Aprobada por el Product Owner (2026-11-15)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `main`
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner
 
 ---
 
@@ -197,7 +197,7 @@ No aplica.
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 0
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO el 2026-11-16; Sprint 0, versión v0.1.0)
 
 ### Historia
 Como equipo de desarrollo,
@@ -286,12 +286,12 @@ No aplica.
 - [x] Aprobada por el Product Owner (2026-11-15)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence (diagrama del modelo de datos)
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `main`
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel
+- [x] Documentado en Confluence (diagrama del modelo de datos)
+- [x] Aceptado por el Product Owner
 
 ---
 
@@ -304,7 +304,7 @@ No aplica.
 **Prioridad (MoSCoW):** Must
 **Estimación:** 2
 **Sprint:** 0
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO el 2026-11-16; Sprint 0, versión v0.1.0)
 
 ### Historia
 Como Product Owner,
@@ -391,12 +391,12 @@ No aplica.
 - [x] Aprobada por el Product Owner (2026-11-15)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `main`
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner
 
 ---
 
@@ -409,7 +409,7 @@ No aplica.
 **Prioridad (MoSCoW):** Must
 **Estimación:** 2
 **Sprint:** 0
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO el 2026-11-16; Sprint 0, versión v0.1.0)
 
 ### Historia
 Como Product Owner,
@@ -481,9 +481,9 @@ No aplica.
 - [x] Aprobada por el Product Owner (2026-11-15)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main` — No aplica (no hay código)
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions — No aplica
-- [ ] Desplegado en Vercel — No aplica
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `main` — No aplica (no hay código)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions — No aplica
+- [x] Desplegado en Vercel — No aplica
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner
