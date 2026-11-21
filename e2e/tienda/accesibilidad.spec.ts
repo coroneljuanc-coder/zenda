@@ -46,9 +46,20 @@ test.describe("Accesibilidad WCAG 2.1 AA (ZTV-37)", () => {
     await revisar(page);
   });
 
+  test("ficha con el aviso de producto agregado (ZTV-16)", async ({ page }) => {
+    await page.goto("/producto/cargador-rapido-usb-c-30w");
+    await page.getByRole("button", { name: "Agregar al carrito" }).click();
+    await expect(page.getByText(/^Agregaste 1 × /)).toBeVisible();
+    // Tras agregar, la página se vuelve a dibujar; se revisa cuando ya tiene su título.
+    await expect(page).toHaveTitle("Cargador rápido USB-C de 30 W | Zenda");
+    await revisar(page);
+  });
+
   test("ficha de un producto agotado (ZTV-13)", async ({ page }) => {
     await page.goto("/producto/teclado-mecanico-compacto");
-    await expect(page.getByText("Este producto no está disponible por ahora")).toBeVisible();
+    await expect(
+      page.getByText("Este producto no está disponible por ahora").filter({ visible: true }),
+    ).toBeVisible();
     await revisar(page);
   });
 

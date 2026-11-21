@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useId, useRef, useState } from "react";
+import { useId, useRef, useState, useSyncExternalStore, useTransition } from "react";
+import { agregarAlCarrito } from "@/app/acciones/carrito";
+import { cantidadMaxima, MAXIMO_POR_LINEA } from "@/lib/carrito/reglas";
 import { muestraDeColor } from "@/lib/catalogo/colores";
 import { textoDisponibilidad } from "@/lib/catalogo/reglas";
 import {
@@ -39,9 +42,10 @@ export function CompraProductoConUrl(props: Props) {
 }
 
 /**
- * Precio, disponibilidad, selector de talla y color, y botón de compra de la ficha (ZTV-15).
- * Al elegir, cambian el precio (RN1) y la disponibilidad, y la dirección pasa a `?variante={sku}`
- * sin recargar la página.
+ * Precio, disponibilidad, selector de talla y color (ZTV-15), cantidad y botón «Agregar al
+ * carrito» (ZTV-16) de la ficha. Al elegir, cambian el precio (RN1) y la disponibilidad, y la
+ * dirección pasa a `?variante={sku}` sin recargar la página. Las reglas del carrito se validan
+ * en el servidor; aquí solo se muestran sus avisos.
  */
 export function CompraProducto({
   variantes,
@@ -56,6 +60,17 @@ export function CompraProducto({
   // Los avisos «Selecciona…» solo aparecen después de intentar agregar (escenario 3).
   const [intentoAgregar, setIntentoAgregar] = useState(false);
   const grupos = useRef<Partial<Record<Atributo, HTMLFieldSetElement | null>>>({});
+  const [cantidad, setCantidad] = useState(1);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [agregando, empezarAgregar] = useTransition();
+  // ZTV-73: hasta que la página esté lista para responder, los botones se ven deshabilitados; así
+  // un toque temprano no se pierde en silencio (en el HTML inicial es `false`, luego `true`).
+  const lista = useSyncExternalStore(
+    sinSuscripcion,
+    () => true,
+    () => false,
+  );
 
   const { tallas, colores } = opcionesDe(variantes);
   const estado = evaluarSeleccion(variantes, seleccion);
@@ -70,10 +85,15 @@ export function CompraProducto({
         ? "Agotado"
         : disponibilidad;
   const sinStock = estado.tipo === "agotada" || (estado.tipo === "incompleta" && agotado);
+  // RN1 de ZTV-16: de 1 al menor valor entre el stock de la variante y 10.
+  const maximo = estado.tipo === "lista" ? cantidadMaxima(estado.variante.stock) : MAXIMO_POR_LINEA;
+  const cantidadElegida = Math.min(cantidad, Math.max(1, maximo));
 
   function elegir(atributo: Atributo, valor: string) {
     const nueva = { ...seleccion, [atributo]: valor };
     setSeleccion(nueva);
+    setAviso(null);
+    setError(null);
     const exacta = buscarVariante(variantes, nueva);
     const url = new URL(window.location.href);
     if (exacta) url.searchParams.set("variante", exacta.sku);
@@ -86,8 +106,15 @@ export function CompraProducto({
     if (estado.tipo === "incompleta") {
       // Lleva el foco al primer selector que falta, donde aparece su aviso.
       grupos.current[estado.faltan[0]]?.querySelector("input")?.focus();
+      return;
     }
-    // «agotada»: el botón está deshabilitado (RN2). «lista»: ZTV-16 agrega al carrito aquí.
+    if (estado.tipo !== "lista") return; // «agotada»: el botón está deshabilitado (RN2).
+    const varianteId = estado.variante.id;
+    empezarAgregar(async () => {
+      const respuesta = await agregarAlCarrito({ varianteId, cantidad: cantidadElegida });
+      setAviso(respuesta.ok ? respuesta.aviso : null);
+      setError(respuesta.ok ? null : respuesta.mensaje);
+    });
   }
 
   return (
@@ -111,6 +138,7 @@ export function CompraProducto({
           variantes={variantes}
           seleccion={seleccion}
           falta={faltan.includes("talla")}
+          activo={lista}
           onElegir={elegir}
           refGrupo={(el) => {
             grupos.current.talla = el;
@@ -125,6 +153,7 @@ export function CompraProducto({
           variantes={variantes}
           seleccion={seleccion}
           falta={faltan.includes("color")}
+          activo={lista}
           onElegir={elegir}
           refGrupo={(el) => {
             grupos.current.color = el;
@@ -142,19 +171,116 @@ export function CompraProducto({
           <p className="font-medium">Este producto no está disponible por ahora</p>
         ) : (
           <>
-            <button
-              type="button"
-              onClick={agregar}
-              disabled={estado.tipo === "agotada"}
-              className="min-h-12 w-full bg-tinta px-6 font-semibold text-blanco disabled:bg-superficie disabled:text-gris md:w-auto"
-            >
-              Agregar al carrito
-            </button>
-            <p className="mt-2 text-sm text-gris">Próximamente</p>
+            <SelectorCantidad
+              valor={cantidadElegida}
+              maximo={maximo}
+              activo={lista}
+              onCambiar={(n) => {
+                setCantidad(n);
+                setError(null);
+              }}
+            />
+            {/* En celular, el botón queda fijo abajo de la pantalla; en escritorio, en su lugar. */}
+            <div className="fixed inset-x-0 bottom-0 z-20 border-t border-linea bg-blanco p-4 md:static md:mt-6 md:border-0 md:bg-transparent md:p-0">
+              {/* El aviso se anuncia a los lectores de pantalla (aria-live). */}
+              <div role="status" data-prueba="aviso-carrito">
+                {aviso && (
+                  <div className="mb-3 border border-tinta p-3">
+                    <p className="font-semibold">{aviso}</p>
+                    <div className="mt-2 flex flex-wrap gap-3">
+                      <Link
+                        href="/carrito"
+                        className="flex min-h-11 items-center bg-tinta px-4 font-semibold text-blanco"
+                      >
+                        Ver carrito
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setAviso(null)}
+                        className="min-h-11 border border-tinta px-4 font-semibold"
+                      >
+                        Seguir comprando
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {error && (
+                <p role="alert" className="mb-3 border-l-4 border-tinta pl-2 font-semibold">
+                  {error}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={agregar}
+                disabled={!lista || estado.tipo === "agotada" || agregando}
+                className="min-h-12 w-full bg-tinta px-6 font-semibold text-blanco disabled:bg-superficie disabled:text-gris md:w-auto"
+              >
+                {agregando ? "Agregando…" : "Agregar al carrito"}
+              </button>
+            </div>
+            {/* Espacio para que la barra fija del celular no tape el final de la página. */}
+            <div aria-hidden="true" className="h-24 md:hidden" />
           </>
         )}
       </div>
     </>
+  );
+}
+
+/** Selector de cantidad − 1 + (ZTV-16). Funciona con teclado y anuncia el valor al cambiar. */
+function SelectorCantidad({
+  valor,
+  maximo,
+  activo,
+  onCambiar,
+}: {
+  valor: number;
+  maximo: number;
+  /** `false` mientras la página termina de cargar (ZTV-73). */
+  activo: boolean;
+  onCambiar: (n: number) => void;
+}) {
+  const idEtiqueta = useId();
+  const boton =
+    "flex size-11 items-center justify-center text-xl disabled:text-linea focus-visible:outline-2 focus-visible:outline-tinta";
+  return (
+    <div className="flex items-center gap-4">
+      <span id={idEtiqueta} className="font-semibold">
+        Cantidad
+      </span>
+      <div
+        role="group"
+        aria-labelledby={idEtiqueta}
+        className="flex items-center border border-linea"
+      >
+        <button
+          type="button"
+          aria-label="Disminuir cantidad"
+          disabled={!activo || valor <= 1}
+          onClick={() => onCambiar(valor - 1)}
+          className={boton}
+        >
+          −
+        </button>
+        <output
+          aria-live="polite"
+          className="w-10 text-center font-semibold"
+          data-prueba="cantidad"
+        >
+          {valor}
+        </output>
+        <button
+          type="button"
+          aria-label="Aumentar cantidad"
+          disabled={!activo || valor >= maximo}
+          onClick={() => onCambiar(valor + 1)}
+          className={boton}
+        >
+          +
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -165,6 +291,8 @@ type GrupoProps = {
   variantes: VarianteFicha[];
   seleccion: Seleccion;
   falta: boolean;
+  /** `false` mientras la página termina de cargar: un toque temprano no se pierde (ZTV-73). */
+  activo: boolean;
   onElegir: (atributo: Atributo, valor: string) => void;
   refGrupo: (el: HTMLFieldSetElement | null) => void;
 };
@@ -181,6 +309,7 @@ function GrupoOpciones({
   variantes,
   seleccion,
   falta,
+  activo,
   onElegir,
   refGrupo,
 }: GrupoProps) {
@@ -214,6 +343,7 @@ function GrupoOpciones({
                 name={nombre}
                 value={valor}
                 checked={elegido === valor}
+                disabled={!activo}
                 onChange={() => onElegir(atributo, valor)}
                 className="peer sr-only"
               />
@@ -238,4 +368,9 @@ function GrupoOpciones({
       </div>
     </fieldset>
   );
+}
+
+/** No hay nada que escuchar: solo interesa distinguir el HTML inicial del navegador ya listo. */
+function sinSuscripcion() {
+  return () => {};
 }

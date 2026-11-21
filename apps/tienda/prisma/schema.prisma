@@ -45,18 +45,51 @@ model Producto {
 }
 
 model VarianteProducto {
-  id         String   @id @default(cuid())
-  productoId String
-  producto   Producto @relation(fields: [productoId], references: [id], onDelete: Cascade)
-  sku        String   @unique
-  talla      String?
-  color      String?
+  id            String         @id @default(cuid())
+  productoId    String
+  producto      Producto       @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  sku           String         @unique
+  talla         String?
+  color         String?
   /// Unidades disponibles. Nunca negativo.
-  stock      Int      @default(0)
+  stock         Int            @default(0)
   /// Precio propio de la variante en COP. Si está vacío, se usa el del producto.
-  precio     Int?
+  precio        Int?
+  lineasCarrito LineaCarrito[]
 
   @@index([productoId])
+}
+
+// Carrito de un visitante (ZTV-16, épica E2). Se guarda en la base y se reconoce con una cookie,
+// para que no se pierda al cerrar el navegador (RN5: dura 30 días desde la última modificación).
+// RN3: agregar al carrito no reserva ni descuenta inventario. RN6: guarda variante y cantidad,
+// nunca el precio, que siempre se toma del catálogo vigente.
+model Carrito {
+  id            String         @id @default(cuid())
+  /// Identificador aleatorio y no adivinable que guarda la cookie `zenda_carrito`.
+  token         String         @unique
+  creadoEn      DateTime       @default(now())
+  actualizadoEn DateTime       @updatedAt
+  /// RN5: 30 días después de la última modificación. Un carrito vencido ya no se usa.
+  expiraEn      DateTime
+  lineas        LineaCarrito[]
+}
+
+model LineaCarrito {
+  id          String           @id @default(cuid())
+  carritoId   String
+  carrito     Carrito          @relation(fields: [carritoId], references: [id], onDelete: Cascade)
+  varianteId  String
+  variante    VarianteProducto @relation(fields: [varianteId], references: [id], onDelete: Cascade)
+  /// RN1: de 1 a 10 (también protegido con una restricción CHECK en la base).
+  cantidad    Int
+  /// Precio que vio el visitante al agregar. Solo sirve para avisar «El precio de este producto
+  /// cambió» (ZTV-17); el subtotal siempre usa el precio vigente del catálogo (RN6 de ZTV-16).
+  precioVisto Int
+
+  /// RN2: la misma variante nunca se repite en dos líneas del mismo carrito.
+  @@unique([carritoId, varianteId])
+  @@index([varianteId])
 }
 
 model ImagenProducto {

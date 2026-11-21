@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { ContadorCarrito, EnlaceCarrito } from "./ContadorCarrito";
 import { EnlaceCategoria } from "./EnlaceCategoria";
 import { listarCategoriasMenu } from "@/lib/catalogo/menu";
 import { MenuCelular } from "./MenuCelular";
@@ -7,7 +9,7 @@ import { MenuCelular } from "./MenuCelular";
  * Encabezado común (ZTV-10, escenario 1). El logo siempre lleva al inicio (RN2).
  * Menú de categorías desde la base de datos, en el orden del campo `orden` (RN1, ZTV-35):
  * en escritorio se ve en línea; en celular se abre con el botón «Menú».
- * El carrito llega con la épica E2; por ahora la bolsa muestra 0 productos y no es un enlace.
+ * La bolsa lleva al carrito y muestra cuántas unidades tiene (ZTV-16).
  */
 export async function Encabezado() {
   const categorias = await listarCategoriasMenu();
@@ -37,35 +39,10 @@ export async function Encabezado() {
             ))}
           </ul>
         </nav>
-        <p
-          className="flex min-h-11 items-center justify-self-end gap-2 text-sm"
-          data-prueba="carrito"
-        >
-          <IconoBolsa />
-          {/* Texto solo para lectores de pantalla: un <p> no admite aria-label (ZTV-55). */}
-          <span className="sr-only">Carrito: </span>
-          <span>0</span>
-          <span className="sr-only"> productos</span>
-        </p>
+        <Suspense fallback={<EnlaceCarrito unidades={null} />}>
+          <ContadorCarrito />
+        </Suspense>
       </div>
     </header>
-  );
-}
-
-function IconoBolsa() {
-  return (
-    <svg
-      aria-hidden="true"
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="square"
-    >
-      <path d="M5 8h14l-1 13H6L5 8Z" />
-      <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-    </svg>
   );
 }
