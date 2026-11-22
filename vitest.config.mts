@@ -52,7 +52,8 @@ export default defineConfig({
       {
         test: {
           name: "notificaciones",
-          include: ["apps/notificaciones/src/**/*.test.ts"],
+          // Las pruebas del contrato compartido (ZTV-25) corren con las del servicio.
+          include: ["apps/notificaciones/src/**/*.test.ts", "packages/contratos/src/**/*.test.ts"],
           exclude: ["**/*.integracion.test.ts", "**/node_modules/**"],
           environment: "node",
         },

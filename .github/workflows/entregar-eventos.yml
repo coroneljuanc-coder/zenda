@@ -1,0 +1,25 @@
+# Reintento de la entrega de eventos de la tienda al servicio de Notificaciones (ZTV-25).
+# Cada 15 minutos llama a la tienda de producción, que entrega los eventos «pedido.pagado» que
+# quedaron pendientes (por ejemplo, si Notificaciones estaba caído). La llamada no lleva datos ni
+# devuelve datos de pedidos. GitHub Actions es gratis en repositorios públicos (CLAUDE.md: tareas
+# periódicas más frecuentes que una vez al día).
+name: Entregar eventos pendientes
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  entregar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Pedir a la tienda que entregue los eventos pendientes
+        run: |
+          codigo=$(curl -s -o respuesta.json -w "%{http_code}" -X POST https://zenda-tienda.vercel.app/api/eventos/entregar)
+          echo "HTTP $codigo"; cat respuesta.json || true
+          # 404: la versión con eventos (v1.0.0) aún no está en producción; no es un error.
+          if [ "$codigo" != "200" ] && [ "$codigo" != "404" ]; then exit 1; fi

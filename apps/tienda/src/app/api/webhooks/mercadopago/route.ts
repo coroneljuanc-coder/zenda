@@ -1,4 +1,6 @@
+import { after } from "next/server";
 import { obtenerBD } from "@/lib/bd";
+import { entregarEventosPendientes, leerConfigEventos } from "@/lib/eventos/bandeja";
 import { atenderAvisoMercadoPago } from "@/lib/compra/aviso-mercadopago";
 import { consultarPago, leerConfigMercadoPago } from "@/lib/compra/mercadopago";
 
@@ -28,5 +30,13 @@ export async function POST(peticion: Request): Promise<Response> {
     { url: new URL(peticion.url), encabezados: peticion.headers, cuerpo },
     { secreto, consultar: (id) => consultarPago(config, id) },
   );
+  // ZTV-25 (RN2): después de responder, se intenta entregar el evento «pedido.pagado» al servicio
+  // de Notificaciones. Si falla, queda pendiente y lo reintenta la tarea programada.
+  const configEventos = leerConfigEventos();
+  if (estado === 200 && configEventos) {
+    after(async () => {
+      await entregarEventosPendientes(obtenerBD(), configEventos);
+    });
+  }
   return Response.json({ ok: estado === 200 }, { status: estado });
 }

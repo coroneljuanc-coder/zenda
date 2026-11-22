@@ -28,7 +28,7 @@ export const bd = new PrismaClient({ adapter: new PrismaPg({ connectionString: c
 export async function vaciar() {
   // Las tablas de pedidos y pagos (ZTV-20 y 21) se borran si ya existen en el esquema.
   const tablas = bd as unknown as Record<string, { deleteMany?: () => Promise<unknown> }>;
-  for (const nombre of ["eventoPago", "lineaPedido", "pedido"])
+  for (const nombre of ["eventoSaliente", "eventoPago", "lineaPedido", "pedido"])
     await tablas[nombre]?.deleteMany?.();
   await bd.datosEntrega.deleteMany();
   await bd.lineaCarrito.deleteMany();
