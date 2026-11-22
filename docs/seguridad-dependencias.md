@@ -37,3 +37,16 @@ visitantes: todas vienen de herramientas de desarrollo o de compilación.
   de versión mayor. La regla del equipo es no instalar versiones con menos de dos semanas.
 - **Cuándo retomarlo:** en el mantenimiento del Sprint 2, si esas versiones ya tienen más de dos
   semanas y `eslint-config-next` las acepta.
+
+## Revisión del 2026-11-22 (ZTV-84, acción A7)
+
+`npm audit` sigue con las mismas 7 alertas moderadas de `minimatch` (cadena de `typescript-eslint`).
+`npm audit --omit=dev`, es decir, lo que se publica: **0 alertas**.
+
+- `typescript-eslint` 8.73.0, la versión que las corrige, se publicó el 2026-11-16: el 22 de
+  noviembre tiene 6 días. Cumple las dos semanas el **2026-11-30**.
+- `minimatch` 11.0.9 (2026-11-16) también cumple las dos semanas el 30 de noviembre. Forzarla con
+  `overrides` sobre `typescript-eslint` 8.72.2 sería un cambio de versión mayor no probado por sus
+  autores: se descarta.
+- **Decisión:** se mantienen aceptadas. Se actualiza `typescript-eslint` a 8.73.0 en el mantenimiento
+  del Sprint 4 (desde el 30 de noviembre), se corre `npm audit` y se anota aquí el resultado.

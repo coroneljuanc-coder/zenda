@@ -64,6 +64,7 @@ export async function consultarCarrito(
   bd: PrismaClient,
   token: string | null | undefined,
   ahora = new Date(),
+  { guardarAjustes = true }: { guardarAjustes?: boolean } = {},
 ): Promise<CarritoVista> {
   if (!token) return VACIO;
   const carrito = await bd.carrito.findUnique({
@@ -147,7 +148,8 @@ export async function consultarCarrito(
     });
   }
 
-  if (cambios.length > 0) {
+  // ZTV-20 revisa el carrito sin guardar los ajustes, para que el cliente vea los avisos al volver a él.
+  if (guardarAjustes && cambios.length > 0) {
     await bd.$transaction(
       cambios.map(({ id, cantidad, precioVisto }) =>
         bd.lineaCarrito.update({ where: { id }, data: { cantidad, precioVisto } }),

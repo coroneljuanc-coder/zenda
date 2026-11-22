@@ -112,15 +112,23 @@ function ResumenCarrito({ carrito }: { carrito: CarritoVista }) {
       </p>
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-linea bg-blanco p-4 md:static md:mt-6 md:border-0 md:bg-transparent md:p-0">
-        {/* El paso de datos de envío y pago (COM-01) llega en el Sprint 3. */}
-        <button
-          type="button"
-          disabled={!carrito.puedeContinuar}
-          className="min-h-12 w-full bg-tinta px-6 font-semibold text-blanco disabled:bg-linea disabled:text-gris"
-        >
-          Continuar con la compra
-        </button>
-        <p className="mt-2 text-center text-sm text-gris">Próximamente: datos de envío y pago.</p>
+        {/* ZTV-19: lleva a los datos de envío; solo si queda al menos una línea disponible. */}
+        {carrito.puedeContinuar ? (
+          <Link
+            href="/compra"
+            className="flex min-h-12 w-full items-center justify-center bg-tinta px-6 font-semibold text-blanco"
+          >
+            Continuar con la compra
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="min-h-12 w-full bg-linea px-6 font-semibold text-gris"
+          >
+            Continuar con la compra
+          </button>
+        )}
       </div>
       <Link
         href="/"

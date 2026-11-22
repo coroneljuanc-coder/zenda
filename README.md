@@ -51,16 +51,17 @@ Para empezar de cero: `npm run bd:detener`, borra la carpeta `.bd-local/` y vuel
 
 ## Comandos útiles
 
-| Comando                    | Para qué                                                                                |
-| -------------------------- | --------------------------------------------------------------------------------------- |
-| `npm run lint`             | Revisa estilo y reglas (incluye la regla que impide mezclar código entre aplicaciones). |
-| `npm run typecheck`        | Revisa los tipos de TypeScript.                                                         |
-| `npm run build`            | Compila las aplicaciones.                                                               |
-| `npm run format`           | Da formato al código con Prettier.                                                      |
-| `npm test`                 | Pruebas unitarias (Vitest).                                                             |
-| `npm run test:integracion` | Pruebas de integración contra la base de datos local (borran sus datos).                |
-| `npm run db:seed`          | Carga el catálogo de ejemplo en la base de datos.                                       |
-| `npm run test:e2e`         | Pruebas de punta a punta en celular y escritorio (Playwright).                          |
+| Comando                    | Para qué                                                                                                                                                                   |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run verificar`        | **Antes de un PR:** corre todo en orden (base, formato, lint, tipos, pruebas, datos, compilación y E2E) y se detiene en el primer error. Con `-- --sin-e2e` omite las E2E. |
+| `npm run lint`             | Revisa estilo y reglas (incluye la regla que impide mezclar código entre aplicaciones).                                                                                    |
+| `npm run typecheck`        | Revisa los tipos de TypeScript.                                                                                                                                            |
+| `npm run build`            | Compila las aplicaciones.                                                                                                                                                  |
+| `npm run format`           | Da formato al código con Prettier.                                                                                                                                         |
+| `npm test`                 | Pruebas unitarias (Vitest).                                                                                                                                                |
+| `npm run test:integracion` | Pruebas de integración contra la base de datos local (borran sus datos).                                                                                                   |
+| `npm run db:seed`          | Carga el catálogo de ejemplo en la base de datos.                                                                                                                          |
+| `npm run test:e2e`         | Pruebas de punta a punta en celular y escritorio (Playwright).                                                                                                             |
 
 La primera vez, instala el navegador de pruebas con `npx playwright install chromium`.
 

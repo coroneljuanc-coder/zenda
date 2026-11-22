@@ -56,6 +56,7 @@ model VarianteProducto {
   /// Precio propio de la variante en COP. Si está vacío, se usa el del producto.
   precio        Int?
   lineasCarrito LineaCarrito[]
+  lineasPedido  LineaPedido[]
 
   @@index([productoId])
 }
@@ -73,6 +74,89 @@ model Carrito {
   /// RN5: 30 días después de la última modificación. Un carrito vencido ya no se usa.
   expiraEn      DateTime
   lineas        LineaCarrito[]
+  datosEntrega  DatosEntrega?
+  pedidos       Pedido[]
+}
+
+/// Estados del pedido (épica E3). Los de envío llegan con E5.
+enum EstadoPedido {
+  PENDIENTE_PAGO
+  PAGADO
+  PAGO_RECHAZADO
+  CANCELADO
+  REQUIERE_REVISION
+}
+
+/// ZTV-20: el pedido guarda una copia de todo lo que el cliente vio al tocar «Pagar» (RN2).
+model Pedido {
+  id                 String        @id @default(cuid())
+  /// RN3: ZEN-AAAAMMDD-XXXXX. Es la referencia externa que se envía a la pasarela.
+  referencia         String        @unique
+  /// Aleatorio: permite consultar el resultado sin exponer datos (ZTV-22).
+  tokenAcceso        String        @unique
+  estado             EstadoPedido  @default(PENDIENTE_PAGO)
+  subtotal           Int
+  envio              Int
+  total              Int
+  /// Huella del contenido (líneas y total) para no duplicar el pedido con un doble clic.
+  claveContenido     String
+  nombreCompleto     String
+  correo             String
+  celular            String
+  departamento       String
+  ciudad             String
+  codigoDane         String
+  direccion          String
+  detalles           String?
+  notas              String?
+  /// El carrito de origen; si el carrito se borra, el pedido se conserva.
+  carritoId          String?
+  carrito            Carrito?      @relation(fields: [carritoId], references: [id], onDelete: SetNull)
+  /// ZTV-21 y ZTV-86: datos del pago confirmado por la pasarela (Mercado Pago, RN6).
+  pasarelaTransaccionId String?
+  metodoPago         String?
+  pagadoEn           DateTime?
+  creadoEn           DateTime      @default(now())
+  actualizadoEn      DateTime      @updatedAt
+  lineas             LineaPedido[]
+
+  @@index([carritoId, estado])
+}
+
+model LineaPedido {
+  id                  String           @id @default(cuid())
+  pedidoId            String
+  pedido              Pedido           @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  varianteId          String
+  variante            VarianteProducto @relation(fields: [varianteId], references: [id], onDelete: Restrict)
+  nombreProducto      String
+  descripcionVariante String?
+  precioUnitario      Int
+  cantidad            Int
+  totalLinea          Int
+
+  @@index([pedidoId])
+  @@index([varianteId])
+}
+
+/// ZTV-19: datos de contacto y envío del visitante, guardados con su carrito mientras dure (RN4).
+model DatosEntrega {
+  id               String   @id @default(cuid())
+  carritoId        String   @unique
+  carrito          Carrito  @relation(fields: [carritoId], references: [id], onDelete: Cascade)
+  nombreCompleto   String
+  correo           String
+  celular          String
+  departamento     String
+  ciudad           String
+  /// Código DANE (DIVIPOLA) del municipio.
+  codigoDane       String
+  direccion        String
+  detalles         String?
+  notas            String?
+  /// Fecha y hora en que el visitante autorizó el tratamiento de sus datos (Ley 1581 de 2012).
+  aceptoPoliticaEn DateTime
+  actualizadoEn    DateTime @updatedAt
 }
 
 model LineaCarrito {
@@ -101,4 +185,20 @@ model ImagenProducto {
   orden            Int
 
   @@unique([productoId, orden])
+}
+
+/// ZTV-21: cada aviso recibido de la pasarela queda registrado (trazabilidad), sea válido o no.
+model EventoPago {
+  id             String   @id @default(cuid())
+  proveedor      String
+  /// Identificador del pago en la pasarela.
+  transaccionId  String?
+  referencia     String?
+  /// Estado que informó la pasarela (approved, rejected…).
+  estado         String?
+  recibidoEn     DateTime @default(now())
+  /// Qué hizo Zenda con el aviso: pagado, rechazado, repetido, revision-monto, revision-stock…
+  resultado      String
+
+  @@index([referencia])
 }

@@ -113,7 +113,7 @@ Para decidir el tipo, tres preguntas en orden:
 - Despliegue: Vercel (plan Hobby, gratuito, mientras aprendemos)
 - Base de datos: PostgreSQL en Neon (gratuito, integrado con Vercel) con Prisma
 - Correos: Resend o similar (plan gratuito)
-- Pagos: Wompi o Mercado Pago en modo sandbox
+- Pagos: Mercado Pago (Checkout Pro) en modo de pruebas (D1)
 
 ## Stack técnico
 - Next.js con TypeScript
@@ -149,7 +149,7 @@ Funcionalidades principales:
 Construcción incremental: primero un MVP (catálogo, carrito y compra) y luego funcionalidades sprint a sprint.
 
 ## Decisiones de producto aceptadas (2026-11-15)
-- D1 Pasarela: Wompi (sandbox).
+- D1 Pasarela: Mercado Pago, Checkout Pro en modo de pruebas (cambio aprobado por el PO el 2026-11-22, ZTV-86). Antes era Wompi, que pide registrar un comercio con RUT y cuenta Bancolombia incluso para pruebas; Mercado Pago da credenciales de prueba con una cuenta personal (solo cédula). Solo pagos de prueba: el Access Token de prueba hoy empieza por `APP_USR-` (antes `TEST-`), igual que el de producción, así que antes de cobrar la tienda confirma que la cuenta de Mercado Pago es de prueba (etiqueta `test_user` en `/users/me`) y, si no, no crea la orden de pago (ZTV-89). Aplicación de pruebas: «ZendaTiendaPruebas» (creada el 2026-11-22 con el conector de Mercado Pago), con vendedor y comprador de prueba automáticos.
 - D2 MVP permite comprar como invitado; el registro llega después.
 - D3 Envío fijo $12.000 COP a todo el país; gratis desde $200.000.
 - D4 Precio mostrado = precio final con IVA incluido.
