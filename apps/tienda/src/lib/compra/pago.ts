@@ -14,7 +14,6 @@ export type ResultadoPago =
   | "pendiente"
   | "revision-monto"
   | "revision-stock"
-  | "revision-pago-real"
   | "pedido-desconocido"
   | "ignorado";
 
@@ -27,8 +26,6 @@ type Tx = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
  * - Aprobado repetido: no hace nada otra vez (RN4).
  * - Monto o moneda distintos: «Requiere revisión», sin tocar el stock (escenario 3).
  * - Sin stock suficiente: «Requiere revisión» y alerta; el stock nunca queda negativo (RN3).
- * - Aprobado pero real (no de prueba): «Requiere revisión» y alerta, sin tocar el stock (ZTV-89):
- *   mientras la tienda esté en pruebas no se aceptan cobros reales (D1).
  * - Rechazado o cancelado: «Pago rechazado», el carrito se conserva (escenario 2).
  * - Un pedido «Pagado» nunca vuelve atrás (RN5).
  * Cada aviso queda registrado en EventoPago con lo que se hizo (trazabilidad).
@@ -81,11 +78,6 @@ async function aplicar(tx: Tx, pago: PagoPasarela, ahora: Date): Promise<Resulta
   }
   if (pago.estado === "pendiente") return "pendiente";
   if (pago.estado !== "aprobado") return "ignorado";
-
-  if (pago.real) {
-    await tx.pedido.update({ where: { id: pedido.id }, data: { estado: "REQUIERE_REVISION" } });
-    return "revision-pago-real";
-  }
 
   if (Math.round(pago.monto) !== pedido.total || pago.moneda !== MONEDA) {
     await tx.pedido.update({ where: { id: pedido.id }, data: { estado: "REQUIERE_REVISION" } });

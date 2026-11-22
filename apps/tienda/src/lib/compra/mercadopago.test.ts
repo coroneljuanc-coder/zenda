@@ -3,6 +3,7 @@ import {
   consultarPago,
   crearPreferencia,
   cuerpoPreferencia,
+  esCuentaDePrueba,
   leerConfigMercadoPago,
   traducirEstado,
   verificarFirmaAviso,
@@ -158,29 +159,58 @@ describe("consulta del pago (RN3)", () => {
       monto: 161_700,
       moneda: "COP",
       metodo: "visa",
-      real: false,
     });
     expect(await consultarPago(config, "1", respuesta(404, {}))).toBeNull();
   });
 });
 
-describe("pago real o de prueba (ZTV-89)", () => {
-  const pagoCon = (extra: object) =>
-    respuesta(200, {
-      id: 1,
-      status: "approved",
-      external_reference: "ZEN-20261122-7K3QD",
-      transaction_amount: 161_700,
-      currency_id: "COP",
-      ...extra,
-    });
+describe("solo cuentas de prueba (RN1, ZTV-89)", () => {
+  const preferencia = {
+    id: "pref-9",
+    init_point: "https://www.mercadopago.com.co/checkout/v1/redirect?pref_id=pref-9",
+  };
+  /** Mercado Pago simulado: /users/me responde con las etiquetas dadas; lo demás, la preferencia. */
+  const conEtiquetas = (tags: string[] | null, pedidas: string[] = []) =>
+    (async (url: string | URL | Request) => {
+      const ruta = String(url);
+      pedidas.push(ruta);
+      if (ruta.endsWith("/users/me"))
+        return tags === null
+          ? new Response("{}", { status: 401 })
+          : new Response(JSON.stringify({ id: 1, tags }), { status: 200 });
+      return new Response(JSON.stringify(preferencia), { status: 201 });
+    }) as unknown as typeof fetch;
+  const app = (token: string) => ({ accessToken: token, urlApi: "https://api.mercadopago.com" });
 
-  it("marca como real un pago con live_mode true", async () => {
-    expect((await consultarPago(config, "1", pagoCon({ live_mode: true })))?.real).toBe(true);
+  it("con el vendedor de prueba (APP_USR- y etiqueta test_user) crea la orden de pago", async () => {
+    const pedidas: string[] = [];
+    const r = await crearPreferencia(
+      app("APP_USR-prueba-1"),
+      datos,
+      conEtiquetas(["normal", "test_user"], pedidas),
+    );
+    expect(r?.id).toBe("pref-9");
+    expect(pedidas).toEqual([
+      "https://api.mercadopago.com/users/me",
+      "https://api.mercadopago.com/checkout/preferences",
+    ]);
   });
 
-  it("un pago con live_mode false o sin el dato es de prueba", async () => {
-    expect((await consultarPago(config, "1", pagoCon({ live_mode: false })))?.real).toBe(false);
-    expect((await consultarPago(config, "1", pagoCon({})))?.real).toBe(false);
+  it("con una cuenta real (APP_USR- sin test_user) no crea la orden de pago", async () => {
+    const pedidas: string[] = [];
+    expect(
+      await crearPreferencia(app("APP_USR-real-1"), datos, conEtiquetas(["normal"], pedidas)),
+    ).toBeNull();
+    expect(pedidas).toEqual(["https://api.mercadopago.com/users/me"]);
+  });
+
+  it("si no se puede confirmar la cuenta, no cobra", async () => {
+    expect(await esCuentaDePrueba(app("APP_USR-sin-respuesta"), conEtiquetas(null))).toBe(false);
+  });
+
+  it("las credenciales TEST- son de prueba sin consultar", async () => {
+    const pedidas: string[] = [];
+    expect(await esCuentaDePrueba(app("TEST-abc"), conEtiquetas([], pedidas))).toBe(true);
+    expect(pedidas).toEqual([]);
   });
 });

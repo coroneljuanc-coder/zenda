@@ -47,7 +47,6 @@ const aprobado = (referencia: string): PagoPasarela => ({
   monto: 111_800,
   moneda: "COP",
   metodo: "visa",
-  real: false,
 });
 
 describe("aviso de Mercado Pago (ZTV-86)", () => {
