@@ -17,9 +17,10 @@ const PREFIJOS_TOKEN = ["TEST-", "APP_USR-"];
 /**
  * RN1 de ZTV-86, ajustada en ZTV-89: Mercado Pago entrega hoy las credenciales de prueba con el
  * prefijo `APP_USR-` (antes `TEST-`), igual que las de producción, así que el prefijo ya no separa
- * prueba de producción. Se aceptan ambos prefijos y la regla «solo pruebas» se protege al confirmar
- * el pago: un pago real nunca queda «Pagado» (ver `procesarPago`). Devuelve `null` si falta la
- * credencial o no tiene la forma de una de Mercado Pago.
+ * prueba de producción. Se aceptan ambos prefijos y la regla «solo pruebas» se protege antes de
+ * cobrar: `crearPreferencia` solo crea órdenes de pago con una cuenta de prueba (ver
+ * `esCuentaDePrueba`). Devuelve `null` si falta la credencial o no tiene la forma de una de
+ * Mercado Pago.
  */
 export function leerConfigMercadoPago(
   entorno: Record<string, string | undefined> = process.env,
@@ -98,15 +99,56 @@ export function cuerpoPreferencia(datos: DatosOrdenPago) {
 
 const RespuestaPreferencia = z.object({ id: z.string(), init_point: z.url() });
 
+const RespuestaUsuario = z.object({ tags: z.array(z.string()).optional() });
+const cuentasVerificadas = new Map<string, boolean>();
+
 /**
- * Crea la orden de pago en Mercado Pago y devuelve la dirección del pago. `null` si Mercado Pago
- * no responde en 8 segundos o rechaza la orden (escenario 4).
+ * RN1 (ZTV-89): ¿la credencial pertenece a una cuenta de prueba de Mercado Pago? Las credenciales
+ * `TEST-` solo operan en el entorno de pruebas. Las `APP_USR-` pueden ser de prueba (las de la
+ * cuenta vendedora de prueba que Mercado Pago crea con la aplicación) o reales, así que se consulta
+ * `/users/me`: una cuenta de prueba lleva la etiqueta `test_user`. No se usa `live_mode` del pago:
+ * según Mercado Pago, los pagos de prueba con `APP_USR-` pueden llegar con `live_mode: true`.
+ * Si no se puede confirmar, se responde `false` (no se cobra).
+ */
+export async function esCuentaDePrueba(
+  config: ConfigMercadoPago,
+  pedirA: typeof fetch = fetch,
+): Promise<boolean> {
+  if (config.accessToken.startsWith("TEST-")) return true;
+  const guardado = cuentasVerificadas.get(config.accessToken);
+  if (guardado !== undefined) return guardado;
+  try {
+    const respuesta = await pedirA(`${config.urlApi}/users/me`, {
+      headers: { Authorization: `Bearer ${config.accessToken}` },
+      signal: AbortSignal.timeout(8_000),
+      cache: "no-store",
+    });
+    if (!respuesta.ok) return false;
+    const r = RespuestaUsuario.safeParse(await respuesta.json());
+    if (!r.success) return false;
+    const deprueba = (r.data.tags ?? []).includes("test_user");
+    cuentasVerificadas.set(config.accessToken, deprueba);
+    if (!deprueba)
+      console.error(
+        "[ALERTA] La credencial de Mercado Pago no es de una cuenta de prueba: no se crean órdenes de pago (D1).",
+      );
+    return deprueba;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Crea la orden de pago en Mercado Pago y devuelve la dirección del pago. `null` si la credencial no
+ * es de una cuenta de prueba (RN1), o si Mercado Pago no responde en 8 segundos o rechaza la orden
+ * (escenario 4).
  */
 export async function crearPreferencia(
   config: ConfigMercadoPago,
   datos: DatosOrdenPago,
   pedirA: typeof fetch = fetch,
 ): Promise<{ id: string; url: string } | null> {
+  if (!(await esCuentaDePrueba(config, pedirA))) return null;
   try {
     const respuesta = await pedirA(`${config.urlApi}/checkout/preferences`, {
       method: "POST",
@@ -178,8 +220,6 @@ export type PagoPasarela = {
   monto: number;
   moneda: string;
   metodo: string | null;
-  /** `true` si Mercado Pago dice que es un pago real (`live_mode`), no de prueba. */
-  real: boolean;
 };
 
 const RespuestaPago = z.object({
@@ -189,7 +229,6 @@ const RespuestaPago = z.object({
   transaction_amount: z.number(),
   currency_id: z.string(),
   payment_method_id: z.string().nullable().optional(),
-  live_mode: z.boolean().optional(),
 });
 
 export function traducirEstado(estado: string): EstadoPasarela {
@@ -227,7 +266,6 @@ export async function consultarPago(
       monto: r.data.transaction_amount,
       moneda: r.data.currency_id,
       metodo: r.data.payment_method_id ?? null,
-      real: r.data.live_mode === true,
     };
   } catch {
     return null;

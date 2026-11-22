@@ -606,7 +606,7 @@ Entonces veo "No pudimos conectar con la pasarela de pago. Tu carrito sigue guar
 
 ### Reglas de negocio
 
-- RN1: Solo se aceptan pagos de prueba mientras la tienda esté en pruebas. Ajustada en ZTV-89 (2026-11-22): Mercado Pago entrega hoy el Access Token de prueba con el prefijo `APP_USR-` (antes `TEST-`), igual que el de producción. Se aceptan ambos prefijos y un pago real (`live_mode: true`) nunca queda «Pagado»: pasa a «Requiere revisión», sin tocar el stock, y genera una alerta.
+- RN1: Solo se aceptan pagos de prueba mientras la tienda esté en pruebas. Ajustada en ZTV-89 (2026-11-22): Mercado Pago entrega hoy el Access Token de prueba con el prefijo `APP_USR-` (antes `TEST-`), igual que el de producción. Se aceptan ambos prefijos y, antes de crear la orden de pago, Zenda confirma con `/users/me` que la cuenta es de prueba (etiqueta `test_user`); si no lo es o no se puede confirmar, no cobra (escenario 4) y deja una alerta. No se usa `live_mode`: Mercado Pago advierte que los pagos de prueba con `APP_USR-` pueden llegar con `live_mode: true`.
 - RN2: El monto y los productos de la orden de pago los fija el servidor con la copia del pedido.
 - RN3: El estado del pago no se toma del aviso: Zenda lo consulta a Mercado Pago con su credencial privada.
 - RN4: Se conservan las reglas de COM-02 (revalidación, doble clic, referencia) y de COM-03 (transacción, idempotencia, stock no negativo, "Requiere revisión").
@@ -651,11 +651,11 @@ No aplica (el correo es COM-05).
 | COM-07-CP3 | 3         | Unitaria + integración   | Firma con otra clave, alterada o ausente                 | 400; no consulta; el pedido no cambia                                                                |
 | COM-07-CP4 | 4         | Unitaria + E2E           | Mercado Pago con error, sin respuesta o sin credenciales | Mensaje exacto; pedido CANCELADO; carrito intacto                                                    |
 | COM-07-CP5 | 1 y 2     | Aceptación (sandbox)     | Comprador y tarjeta de prueba de Mercado Pago            | El pedido llega a PAGADO                                                                             |
-| COM-07-CP6 | RN1       | Unitaria + integración   | Token `APP_USR-…`; pago aprobado con `live_mode: true`   | Se acepta el token; el pago real queda REQUIERE_REVISION, stock y carrito intactos (ZTV-89)          |
+| COM-07-CP6 | RN1 | Unitaria | Token `APP_USR-…` de una cuenta con y sin la etiqueta `test_user` | Con `test_user` crea la orden de pago; sin ella, o si no se puede confirmar, no la crea (ZTV-89) |
 
 ### Notas técnicas
 
-- `lib/compra/mercadopago.ts`: credenciales (`APP_USR-` o `TEST-`; ZTV-89), `live_mode` del pago → `real`, orden de pago (POST `/checkout/preferences` con `X-Idempotency-Key`), `verificarFirmaAviso` y `consultarPago` (GET `/v1/payments/{id}`).
+- `lib/compra/mercadopago.ts`: credenciales (`APP_USR-` o `TEST-`; ZTV-89), `esCuentaDePrueba` (GET `/users/me`), orden de pago (POST `/checkout/preferences` con `X-Idempotency-Key`), `verificarFirmaAviso` y `consultarPago` (GET `/v1/payments/{id}`).
 - `notification_url` y `auto_return` solo con una dirección https. Si existe `VERCEL_AUTOMATION_BYPASS_SECRET`, el aviso lo lleva para atravesar la protección de Vercel.
 - Webhook `POST /api/webhooks/mercadopago`: firma inválida → 400; tipo distinto de `payment` → 200; consulta fallida → 502 (Mercado Pago reintenta).
 - Mercado Pago firma `id:<data.id>;request-id:<x-request-id>;ts:<ts>;`; se confirmará con un aviso real en COM-07-CP5.
