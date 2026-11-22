@@ -80,7 +80,7 @@ describe("crear el pedido (ZTV-20)", () => {
     expect(await bd.pedido.count()).toBe(0);
   });
 
-  it("COM-02-CP5 · si Wompi no responde, el pedido queda CANCELADO y el carrito intacto", async () => {
+  it("COM-02-CP5 · si la pasarela no responde, el pedido queda CANCELADO y el carrito intacto", async () => {
     const { token } = await listoParaPagar();
     const r = await crearPedido(bd, { token, totalVisto: 161_700 });
     if (!r.ok) throw new Error("debía crear el pedido");

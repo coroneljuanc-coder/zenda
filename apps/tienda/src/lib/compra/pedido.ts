@@ -177,7 +177,7 @@ async function crearEnTransaccion(
   return { ok: true, pedido: { ...pedido, reutilizado: false } };
 }
 
-/** Escenario 3: si Wompi no responde, el pedido queda «Cancelado» y el carrito sigue intacto. */
+/** Escenario 3 de ZTV-20 (4 de ZTV-86): si la pasarela no responde, el pedido queda «Cancelado» y el carrito sigue intacto. */
 export async function cancelarPedido(bd: PrismaClient, id: string): Promise<void> {
   await bd.pedido.updateMany({
     where: { id, estado: "PENDIENTE_PAGO" },
