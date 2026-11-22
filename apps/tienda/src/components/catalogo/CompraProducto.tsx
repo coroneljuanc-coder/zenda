@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useId, useRef, useState, useSyncExternalStore, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import { agregarAlCarrito } from "@/app/acciones/carrito";
+import { usePaginaLista } from "@/components/comun/usePaginaLista";
 import { cantidadMaxima, MAXIMO_POR_LINEA } from "@/lib/carrito/reglas";
 import { muestraDeColor } from "@/lib/catalogo/colores";
 import { textoDisponibilidad } from "@/lib/catalogo/reglas";
@@ -65,12 +66,8 @@ export function CompraProducto({
   const [error, setError] = useState<string | null>(null);
   const [agregando, empezarAgregar] = useTransition();
   // ZTV-73: hasta que la página esté lista para responder, los botones se ven deshabilitados; así
-  // un toque temprano no se pierde en silencio (en el HTML inicial es `false`, luego `true`).
-  const lista = useSyncExternalStore(
-    sinSuscripcion,
-    () => true,
-    () => false,
-  );
+  // un toque temprano no se pierde en silencio.
+  const lista = usePaginaLista();
 
   const { tallas, colores } = opcionesDe(variantes);
   const estado = evaluarSeleccion(variantes, seleccion);
@@ -368,9 +365,4 @@ function GrupoOpciones({
       </div>
     </fieldset>
   );
-}
-
-/** No hay nada que escuchar: solo interesa distinguir el HTML inicial del navegador ya listo. */
-function sinSuscripcion() {
-  return () => {};
 }

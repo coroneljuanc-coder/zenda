@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CarritoVista, LineaVista } from "@/lib/carrito/consulta";
 import { formatearCOP } from "@/lib/formato";
+import { ControlesLinea } from "./ControlesLinea";
 
 const productos = (n: number) => `${n} ${n === 1 ? "producto" : "productos"}`;
 
@@ -53,9 +54,6 @@ function LineaCarrito({ linea }: { linea: LineaVista }) {
           Precio unitario:{" "}
           <span className="font-semibold whitespace-nowrap">{formatearCOP(linea.precio)}</span>
         </p>
-        <p className="text-sm" data-prueba="cantidad-linea">
-          Cantidad: <span className="font-semibold">{linea.cantidad}</span>
-        </p>
         {linea.avisos.map((aviso) => (
           <p
             key={aviso}
@@ -65,6 +63,15 @@ function LineaCarrito({ linea }: { linea: LineaVista }) {
             {aviso}
           </p>
         ))}
+        {/* ZTV-18: − cantidad + y «Eliminar», sin recargar la página. */}
+        <ControlesLinea
+          lineaId={linea.id}
+          varianteId={linea.varianteId}
+          producto={linea.producto}
+          cantidad={linea.cantidad}
+          maximo={linea.maximo}
+          disponible={linea.disponible}
+        />
       </div>
       <p className="shrink-0 text-right font-extrabold" data-prueba="total-linea">
         {linea.disponible ? (

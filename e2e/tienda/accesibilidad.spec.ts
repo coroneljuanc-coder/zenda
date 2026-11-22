@@ -70,6 +70,18 @@ test.describe("Accesibilidad WCAG 2.1 AA (ZTV-37)", () => {
     await revisar(page);
   });
 
+  test("carrito con el aviso «Eliminaste…» y «Deshacer» (ZTV-18)", async ({ page }) => {
+    await page.goto("/producto/cargador-rapido-usb-c-30w");
+    await page.getByRole("button", { name: "Agregar al carrito" }).click();
+    await expect(page.getByText(/^Agregaste 1 × /)).toBeVisible();
+    await page.goto("/carrito");
+    const eliminar = page.getByRole("button", { name: /^Eliminar .* del carrito$/ });
+    await expect(eliminar).toBeEnabled();
+    await eliminar.click();
+    await expect(page.getByRole("button", { name: "Deshacer" })).toBeVisible();
+    await revisar(page);
+  });
+
   test("ficha de un producto agotado (ZTV-13)", async ({ page }) => {
     await page.goto("/producto/teclado-mecanico-compacto");
     await expect(

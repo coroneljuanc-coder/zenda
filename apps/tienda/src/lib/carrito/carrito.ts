@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { PrismaClient } from "@/generated/prisma/client";
-import { validarCantidad, vencimientoDesde } from "./reglas";
+import { MAXIMO_POR_LINEA, validarCantidad, vencimientoDesde } from "./reglas";
 
 /**
  * Operaciones del carrito en la base de datos (ZTV-16). Reciben el cliente de base de datos para
@@ -116,4 +116,103 @@ export async function contarUnidades(
 ): Promise<number> {
   const carrito = await carritoVigente(bd, token, ahora);
   return carrito ? contarUnidadesDe(bd, carrito.id) : 0;
+}
+
+export const TEXTO_SIN_MAS_UNIDADES = "No hay más unidades disponibles";
+
+export type ResultadoCambio =
+  | { ok: true; cantidad: number; unidadesEnCarrito: number }
+  | { ok: false; mensaje: string; cantidad: number | null };
+
+/**
+ * Cambia la cantidad de una línea del carrito del `token` (ZTV-18, escenarios 1 y 4).
+ * RN1: de 1 al menor valor entre el stock y 10; si no cabe, la línea no cambia. RN4: todo se valida
+ * aquí, en el servidor, y solo se puede tocar una línea del propio carrito.
+ */
+export async function cambiarCantidad(
+  bd: PrismaClient,
+  { token, lineaId, cantidad }: { token?: string | null; lineaId: string; cantidad: number },
+  ahora = new Date(),
+): Promise<ResultadoCambio> {
+  return bd.$transaction(async (tx) => {
+    const carrito = await carritoVigente(tx as PrismaClient, token, ahora);
+    const linea = carrito
+      ? await tx.lineaCarrito.findFirst({
+          where: { id: lineaId, carritoId: carrito.id },
+          select: {
+            cantidad: true,
+            variante: { select: { stock: true, producto: { select: { activo: true } } } },
+          },
+        })
+      : null;
+    if (!carrito || !linea) {
+      return { ok: false, mensaje: "Este producto ya no está en tu carrito.", cantidad: null };
+    }
+    if (!linea.variante.producto.activo || linea.variante.stock <= 0) {
+      return {
+        ok: false,
+        mensaje: "Este producto no está disponible por ahora.",
+        cantidad: linea.cantidad,
+      };
+    }
+    if (!Number.isInteger(cantidad) || cantidad < 1) {
+      return { ok: false, mensaje: "La cantidad mínima es 1.", cantidad: linea.cantidad };
+    }
+    if (cantidad > Math.min(linea.variante.stock, MAXIMO_POR_LINEA)) {
+      return { ok: false, mensaje: TEXTO_SIN_MAS_UNIDADES, cantidad: linea.cantidad };
+    }
+
+    await tx.lineaCarrito.update({ where: { id: lineaId }, data: { cantidad } });
+    await tx.carrito.update({
+      where: { id: carrito.id },
+      data: { expiraEn: vencimientoDesde(ahora) },
+    });
+    return {
+      ok: true,
+      cantidad,
+      unidadesEnCarrito: await contarUnidadesDe(tx as PrismaClient, carrito.id),
+    };
+  });
+}
+
+export type ResultadoEliminar =
+  | { ok: true; producto: string; varianteId: string; cantidad: number }
+  | { ok: false; mensaje: string };
+
+/**
+ * Quita una línea del carrito del `token` (ZTV-18, escenario 2). Devuelve lo necesario para
+ * «Deshacer», que vuelve a agregar la misma variante y cantidad si sigue habiendo stock (RN2).
+ */
+export async function eliminarLinea(
+  bd: PrismaClient,
+  { token, lineaId }: { token?: string | null; lineaId: string },
+  ahora = new Date(),
+): Promise<ResultadoEliminar> {
+  return bd.$transaction(async (tx) => {
+    const carrito = await carritoVigente(tx as PrismaClient, token, ahora);
+    const linea = carrito
+      ? await tx.lineaCarrito.findFirst({
+          where: { id: lineaId, carritoId: carrito.id },
+          select: {
+            varianteId: true,
+            cantidad: true,
+            variante: { select: { producto: { select: { nombre: true } } } },
+          },
+        })
+      : null;
+    if (!carrito || !linea) {
+      return { ok: false, mensaje: "Este producto ya no está en tu carrito." };
+    }
+    await tx.lineaCarrito.delete({ where: { id: lineaId } });
+    await tx.carrito.update({
+      where: { id: carrito.id },
+      data: { expiraEn: vencimientoDesde(ahora) },
+    });
+    return {
+      ok: true,
+      producto: linea.variante.producto.nombre,
+      varianteId: linea.varianteId,
+      cantidad: linea.cantidad,
+    };
+  });
 }

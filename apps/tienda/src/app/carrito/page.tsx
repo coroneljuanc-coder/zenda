@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { CarritoCargando, CarritoVacio, VistaCarrito } from "@/components/carrito/VistaCarrito";
+import { ZonaCarrito } from "@/components/carrito/ZonaCarrito";
 import { obtenerBD } from "@/lib/bd";
 import { consultarCarrito } from "@/lib/carrito/consulta";
 import { COOKIE_CARRITO } from "@/lib/carrito/cookie";
@@ -27,5 +28,10 @@ async function ContenidoCarrito() {
   await connection();
   const token = (await cookies()).get(COOKIE_CARRITO)?.value;
   const carrito = await consultarCarrito(obtenerBD(), token);
-  return carrito.lineas.length === 0 ? <CarritoVacio /> : <VistaCarrito carrito={carrito} />;
+  // ZonaCarrito conserva el aviso «Eliminaste…» aunque el carrito quede vacío (ZTV-18, RN3).
+  return (
+    <ZonaCarrito>
+      {carrito.lineas.length === 0 ? <CarritoVacio /> : <VistaCarrito carrito={carrito} />}
+    </ZonaCarrito>
+  );
 }
