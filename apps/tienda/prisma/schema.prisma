@@ -186,3 +186,19 @@ model ImagenProducto {
 
   @@unique([productoId, orden])
 }
+
+/// ZTV-21: cada aviso recibido de la pasarela queda registrado (trazabilidad), sea válido o no.
+model EventoPago {
+  id             String   @id @default(cuid())
+  proveedor      String
+  /// Identificador de la transacción en Wompi.
+  transaccionId  String?
+  referencia     String?
+  /// Estado que informó la pasarela (APPROVED, DECLINED…).
+  estado         String?
+  recibidoEn     DateTime @default(now())
+  /// Qué hizo Zenda con el aviso: pagado, rechazado, repetido, revision-monto, revision-stock…
+  resultado      String
+
+  @@index([referencia])
+}
