@@ -7,6 +7,7 @@ import {
   textoDisponibilidad,
   textoPrecio,
 } from "./reglas";
+import type { VarianteFicha } from "./variantes";
 
 /** Lo que necesita una tarjeta del listado (ZTV-11). */
 export type TarjetaProducto = {
@@ -85,6 +86,8 @@ export type FichaProducto = {
   agotado: boolean;
   categoria: { nombre: string; slug: string };
   imagenes: { url: string; textoAlternativo: string }[];
+  /** Variantes para elegir talla y color (ZTV-15), con su precio ya resuelto (RN1). */
+  variantes: VarianteFicha[];
 };
 
 /**
@@ -104,7 +107,10 @@ export async function consultarProducto(
       descripcion: true,
       precio: true,
       categoria: { select: { nombre: true, slug: true } },
-      variantes: { select: { stock: true, precio: true } },
+      variantes: {
+        select: { id: true, sku: true, talla: true, color: true, stock: true, precio: true },
+        orderBy: { sku: "asc" },
+      },
       imagenes: { select: { url: true, textoAlternativo: true }, orderBy: { orden: "asc" } },
     },
   });
@@ -121,6 +127,7 @@ export async function consultarProducto(
     agotado: unidades <= 0,
     categoria: p.categoria,
     imagenes: p.imagenes,
+    variantes: p.variantes.map((v) => ({ ...v, precio: v.precio ?? p.precio })),
   };
 }
 

@@ -28,3 +28,6 @@ npm-debug.log*
 
 # Configuración local de Claude Code (permisos de esta máquina)
 .claude/settings.local.json
+
+# Base de datos local de desarrollo (ZTV-58)
+.bd-local/

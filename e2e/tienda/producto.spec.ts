@@ -23,7 +23,9 @@ test.describe("Ficha de producto (ZTV-13)", () => {
     await expect(
       page.getByText("$ 89.900", { exact: true }).filter({ visible: true }),
     ).toBeVisible();
-    await expect(page.locator('[data-prueba="disponibilidad"]')).toHaveText("Disponible");
+    await expect(
+      page.locator('[data-prueba="disponibilidad"]').filter({ visible: true }),
+    ).toHaveText("Disponible");
     await expect(
       page.getByText("Lámpara con brazo flexible, tres tonos de luz y puerto USB."),
     ).toBeVisible();
@@ -38,22 +40,28 @@ test.describe("Ficha de producto (ZTV-13)", () => {
     await expect(
       page.getByRole("img", { name: /Lámpara de escritorio LED/ }).first(),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Agregar al carrito" })).toBeDisabled();
-    await expect(page.getByText("Próximamente")).toBeVisible();
+    // Desde ZTV-15 el botón está activo: primero pide elegir el color de la lámpara.
+    await expect(page.getByRole("button", { name: "Agregar al carrito" })).toBeEnabled();
   });
 
   test("escenario 3 · un producto agotado muestra «Agotado» y no deja comprar", async ({
     page,
   }) => {
     await page.goto("/producto/teclado-mecanico-compacto");
-    await expect(page.locator('[data-prueba="disponibilidad"]')).toHaveText("Agotado");
-    await expect(page.getByText("Este producto no está disponible por ahora")).toBeVisible();
+    await expect(
+      page.locator('[data-prueba="disponibilidad"]').filter({ visible: true }),
+    ).toHaveText("Agotado");
+    await expect(
+      page.getByText("Este producto no está disponible por ahora").filter({ visible: true }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Agregar al carrito" })).toHaveCount(0);
   });
 
   test("RN4 · variantes con precios distintos muestran «Desde»", async ({ page }) => {
     await page.goto("/producto/botella-termica-acero");
-    await expect(page.getByText("Desde $ 49.900", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Desde $ 49.900", { exact: true }).filter({ visible: true }),
+    ).toBeVisible();
   });
 
   test("CAT-04-CP5 · RN3 · un producto inactivo muestra la página 404", async ({ page }) => {
