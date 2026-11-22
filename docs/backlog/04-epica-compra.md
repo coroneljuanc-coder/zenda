@@ -1,13 +1,14 @@
 # Épica E3 – Compra
 
-> Permite que un visitante convierta su carrito en un pedido pagado (en el modo de pruebas de Wompi D1) y reciba la confirmación.
+> Permite que un visitante convierta su carrito en un pedido pagado (en el modo de pruebas de Mercado Pago, D1) y reciba la confirmación.
+> **D1 actualizada el 2026-11-22 (ZTV-86):** la pasarela es Mercado Pago (Checkout Pro). Wompi exigía registrar un comercio con RUT y cuenta Bancolombia incluso para pruebas. COM-02 y COM-03 se construyeron con Wompi y COM-07 cambió solo la conexión con la pasarela; sus reglas siguen vigentes.
 > Arquitectura C (ADR-001, 2026-11-15): COM-03 (ZTV-21) y COM-05 (ZTV-23) ajustadas; nueva COM-06 (ZTV-25) en `05-ajustes-arquitectura-c.md`.
 
 **Cómo funciona el pago (explicado en sencillo):**
-1. Zenda crea el pedido y envía al cliente a la página de pago de **Wompi** (Web Checkout).
-2. El cliente paga **en Wompi** con tarjeta, PSE o Nequi. Zenda **nunca ve ni guarda los datos de la tarjeta**.
-3. Wompi avisa a Zenda el resultado mediante un **webhook**, un mensaje automático de servidor a servidor. Zenda verifica que el aviso sea auténtico y actualiza el pedido.
-4. Wompi devuelve al cliente a Zenda, donde ve el resultado.
+1. Zenda crea el pedido y, desde el servidor, la orden de pago en **Mercado Pago**; luego envía al cliente a su página de pago (Checkout Pro).
+2. El cliente paga **en Mercado Pago** con tarjeta, PSE u otros medios. Zenda **nunca ve ni guarda los datos de la tarjeta**.
+3. Mercado Pago avisa a Zenda mediante un **webhook**, un mensaje automático de servidor a servidor. Zenda verifica la firma del aviso, consulta el pago a Mercado Pago y actualiza el pedido.
+4. Mercado Pago devuelve al cliente a Zenda, donde ve el resultado.
 
 **Estados del pedido:** `PENDIENTE_PAGO` → `PAGADO` | `PAGO_RECHAZADO` | `CANCELADO` | `REQUIERE_REVISION`.
 (Los estados de envío, como preparando, enviado y entregado, llegan con la épica E5.)
@@ -556,4 +557,123 @@ Escenario 4: Sin duplicados (alterno)
 - [ ] Pruebas automatizadas pasando en GitHub Actions
 - [ ] Desplegado en Vercel
 - [ ] Documentado en Confluence
+- [ ] Aceptado por el Product Owner
+
+---
+
+## COM-07 · Pagar con Mercado Pago en lugar de Wompi
+
+**ID:** ZTV-86 (provisional COM-07)
+**Título:** Pagar con Mercado Pago en lugar de Wompi
+**Épica:** E3 – Compra
+**Tipo:** Historia
+**Prioridad (MoSCoW):** Must
+**Estimación:** 5
+**Sprint:** 3 (agregada en la Sprint Review del 2026-11-22)
+**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+
+### Historia
+
+Como visitante,
+quiero pagar mi pedido en la página segura de Mercado Pago,
+para pagar con tarjeta, PSE u otros medios sin entregarle mis datos bancarios a la tienda.
+
+### Contexto
+
+COM-02 y COM-03 se construyeron con Wompi, pero Wompi exige registrar un comercio (RUT y cuenta Bancolombia) incluso para las llaves de prueba. Mercado Pago da credenciales de prueba con una cuenta personal (solo cédula). Se cambia solo la conexión con la pasarela. Stripe se descartó: no opera con negocios colombianos sin una empresa en EE. UU.
+
+### Criterios de aceptación
+
+Escenario 1: Pagar en Mercado Pago (camino feliz)
+Dado que estoy en el resumen final con 3 × Camiseta básica de algodón M / Negro y total $ 161.700
+Cuando toco "Pagar $ 161.700"
+Entonces se crea el pedido "Pendiente de pago" y llego a la página de pago de Mercado Pago con $ 161.700 COP y el detalle de productos y envío
+
+Escenario 2: Pago aprobado (alterno)
+Dado un pedido "Pendiente de pago"
+Cuando Mercado Pago avisa con una firma válida un pago aprobado con la misma referencia y el mismo monto
+Entonces el pedido pasa a "Pagado", se descuenta el stock y se vacía el carrito (reglas de COM-03)
+
+Escenario 3: Aviso falso (error)
+Dado un aviso al webhook cuya firma no coincide
+Cuando llega
+Entonces se responde 400 y nada cambia
+
+Escenario 4: Mercado Pago no disponible (error)
+Dado que no es posible crear la orden de pago en Mercado Pago o faltan las credenciales
+Cuando toco "Pagar"
+Entonces veo "No pudimos conectar con la pasarela de pago. Tu carrito sigue guardado; intenta de nuevo en unos minutos." y el pedido queda "Cancelado"
+
+### Reglas de negocio
+
+- RN1: Solo se aceptan credenciales de prueba (`TEST-…`) mientras la tienda esté en pruebas.
+- RN2: El monto y los productos de la orden de pago los fija el servidor con la copia del pedido.
+- RN3: El estado del pago no se toma del aviso: Zenda lo consulta a Mercado Pago con su credencial privada.
+- RN4: Se conservan las reglas de COM-02 (revalidación, doble clic, referencia) y de COM-03 (transacción, idempotencia, stock no negativo, "Requiere revisión").
+
+### Requisitos no funcionales
+
+- Seguridad: credenciales solo en variables de entorno; firma del aviso HMAC-SHA256 comparada en tiempo constante; sin datos personales del cliente en la orden de pago; Zenda nunca ve datos de tarjetas.
+- Rendimiento: orden de pago en menos de 8 s (si no, escenario 4).
+- Accesibilidad y responsive: la página de pago es de Mercado Pago; "Procesando…" se anuncia.
+
+### Diseño / Interfaz
+
+- Aviso bajo el botón: "Serás dirigido a Mercado Pago, nuestra pasarela de pagos segura. Modo de pruebas: no se realizan cobros reales."
+- La Política de privacidad nombra a Mercado Pago.
+
+### Notificaciones y correos
+
+No aplica (el correo es COM-05).
+
+### Datos
+
+- Pedido: `wompiTransaccionId` → `pasarelaTransaccionId` (renombrada, sin perder datos).
+- EventoPago: proveedor "mercadopago" y estado original de Mercado Pago.
+
+### Dependencias
+
+- COM-02 y COM-03.
+- Aplicación de Mercado Pago del PO; en Vercel `MERCADOPAGO_ACCESS_TOKEN` (TEST-…) y `MERCADOPAGO_SECRETO_WEBHOOK`.
+- Para avisos en el ambiente de revisión: acceso para automatizaciones de Vercel (Protection Bypass).
+
+### Fuera de alcance
+
+- Reembolsos y contracargos (se registran sin cambiar el pedido).
+- Credenciales de producción (cobros reales).
+
+### Casos de prueba
+
+| ID caso    | Escenario | Tipo                     | Datos de prueba                                          | Resultado esperado                                                                                   |
+| ---------- | --------- | ------------------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| COM-07-CP1 | 1         | Unitaria + E2E (sandbox) | Pedido de 3 × Camiseta M / Negro + envío                 | Orden que suma $ 161.700, con referencia y regreso a Zenda; con credenciales lleva a mercadopago.com |
+| COM-07-CP2 | 2         | Integración              | Aviso firmado de pago aprobado (consulta simulada)       | 200; PAGADO; stock 15 → 13                                                                           |
+| COM-07-CP3 | 3         | Unitaria + integración   | Firma con otra clave, alterada o ausente                 | 400; no consulta; el pedido no cambia                                                                |
+| COM-07-CP4 | 4         | Unitaria + E2E           | Mercado Pago con error, sin respuesta o sin credenciales | Mensaje exacto; pedido CANCELADO; carrito intacto                                                    |
+| COM-07-CP5 | 1 y 2     | Aceptación (sandbox)     | Comprador y tarjeta de prueba de Mercado Pago            | El pedido llega a PAGADO                                                                             |
+
+### Notas técnicas
+
+- `lib/compra/mercadopago.ts`: credenciales (solo `TEST-`), orden de pago (POST `/checkout/preferences` con `X-Idempotency-Key`), `verificarFirmaAviso` y `consultarPago` (GET `/v1/payments/{id}`).
+- `notification_url` y `auto_return` solo con una dirección https. Si existe `VERCEL_AUTOMATION_BYPASS_SECRET`, el aviso lo lleva para atravesar la protección de Vercel.
+- Webhook `POST /api/webhooks/mercadopago`: firma inválida → 400; tipo distinto de `payment` → 200; consulta fallida → 502 (Mercado Pago reintenta).
+- Mercado Pago firma `id:<data.id>;request-id:<x-request-id>;ts:<ts>;`; se confirmará con un aviso real en COM-07-CP5.
+- Pago en el sandbox: ventana de incógnito, comprador de prueba de la aplicación y tarjetas de prueba. PR #41.
+
+### Definición de Listo (DoR)
+
+- [x] Historia y contexto claros
+- [x] Criterios de aceptación completos (4 escenarios)
+- [x] Reglas de negocio definidas
+- [x] Estimada en 8 puntos o menos
+- [x] Dependencias identificadas (credenciales de prueba del PO)
+- [x] Aprobada por el Product Owner (2026-11-22)
+
+### Definición de Terminado (DoD)
+
+- [ ] Código en GitHub, revisado e integrado a `main`
+- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
+- [ ] Pruebas automatizadas pasando en GitHub Actions
+- [ ] Desplegado en Vercel
+- [x] Documentado en Confluence
 - [ ] Aceptado por el Product Owner
