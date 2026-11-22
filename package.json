@@ -21,7 +21,8 @@
     "bd:iniciar": "node scripts/bd-local.mjs iniciar",
     "bd:detener": "node scripts/bd-local.mjs detener",
     "bd:reiniciar": "node scripts/bd-local.mjs reiniciar",
-    "bd:estado": "node scripts/bd-local.mjs estado"
+    "bd:estado": "node scripts/bd-local.mjs estado",
+    "verificar": "node scripts/verificar.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
