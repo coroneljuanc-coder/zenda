@@ -24,7 +24,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 Como visitante,
@@ -117,15 +117,15 @@ No aplica.
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias resueltas (D2, D3 y D4 aceptadas)
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-22)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-22)
 
 ---
 
@@ -138,7 +138,7 @@ No aplica.
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 Como visitante,
@@ -226,16 +226,16 @@ No aplica (el correo se envía solo con el pago aprobado, COM-05).
 - [x] Criterios de aceptación completos (4 escenarios)
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
-- [ ] Dependencias resueltas (D1 aceptada; falta la cuenta sandbox de Wompi)
-- [ ] Aprobada por el Product Owner
+- [x] Dependencias resueltas (D1 actualizada: Mercado Pago, ZTV-86)
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-22)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-22)
 
 ---
 
@@ -248,7 +248,7 @@ No aplica (el correo se envía solo con el pago aprobado, COM-05).
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 Como vendedor de Zenda,
@@ -342,15 +342,15 @@ No aplica (sin pantalla para el cliente; el resultado se ve en COM-04).
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-22)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-22)
 
 ---
 
@@ -570,7 +570,7 @@ Escenario 4: Sin duplicados (alterno)
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3 (agregada en la Sprint Review del 2026-11-22)
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 
@@ -674,9 +674,9 @@ No aplica (el correo es COM-05).
 
 ### Definición de Terminado (DoD)
 
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
 - [x] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Aceptado por el Product Owner (2026-11-22)
