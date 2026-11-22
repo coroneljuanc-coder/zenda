@@ -11,3 +11,10 @@ export const MENSAJE_PASARELA_NO_DISPONIBLE =
 /** Aviso bajo el botón «Pagar». */
 export const AVISO_PAGO_PRUEBAS =
   "Serás dirigido a Mercado Pago, nuestra pasarela de pagos segura. Modo de pruebas: no se realizan cobros reales.";
+
+/** Mensajes de la página de resultado del pago (ZTV-22). */
+export const TEXTOS_RESULTADO = {
+  pendiente: "Estamos esperando la confirmación de tu banco. Esto puede tardar unos minutos.",
+  rechazado: "Tu pago no fue aprobado. No se realizó ningún cobro.",
+  revision: "Estamos revisando tu pago. Te contactaremos pronto.",
+} as const;
