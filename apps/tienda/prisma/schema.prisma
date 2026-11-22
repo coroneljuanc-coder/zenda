@@ -73,6 +73,27 @@ model Carrito {
   /// RN5: 30 días después de la última modificación. Un carrito vencido ya no se usa.
   expiraEn      DateTime
   lineas        LineaCarrito[]
+  datosEntrega  DatosEntrega?
+}
+
+/// ZTV-19: datos de contacto y envío del visitante, guardados con su carrito mientras dure (RN4).
+model DatosEntrega {
+  id               String   @id @default(cuid())
+  carritoId        String   @unique
+  carrito          Carrito  @relation(fields: [carritoId], references: [id], onDelete: Cascade)
+  nombreCompleto   String
+  correo           String
+  celular          String
+  departamento     String
+  ciudad           String
+  /// Código DANE (DIVIPOLA) del municipio.
+  codigoDane       String
+  direccion        String
+  detalles         String?
+  notas            String?
+  /// Fecha y hora en que el visitante autorizó el tratamiento de sus datos (Ley 1581 de 2012).
+  aceptoPoliticaEn DateTime
+  actualizadoEn    DateTime @updatedAt
 }
 
 model LineaCarrito {

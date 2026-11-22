@@ -70,6 +70,24 @@ test.describe("Accesibilidad WCAG 2.1 AA (ZTV-37)", () => {
     await revisar(page);
   });
 
+  test("formulario de compra mostrando los errores (ZTV-19)", async ({ page }) => {
+    await page.goto("/producto/cargador-rapido-usb-c-30w");
+    await page.getByRole("button", { name: "Agregar al carrito" }).click();
+    await expect(page.getByText(/^Agregaste 1 × /)).toBeVisible();
+    await page.goto("/compra");
+    const continuar = page.getByRole("main").getByRole("button", { name: "Continuar al pago" });
+    await expect(continuar).toBeEnabled();
+    await continuar.click();
+    await expect(page.getByText("Ingresa tu nombre completo")).toBeVisible();
+    await revisar(page);
+  });
+
+  test("Política de privacidad (ZTV-19)", async ({ page }) => {
+    await page.goto("/politica-de-privacidad");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await revisar(page);
+  });
+
   test("carrito con el aviso «Eliminaste…» y «Deshacer» (ZTV-18)", async ({ page }) => {
     await page.goto("/producto/cargador-rapido-usb-c-30w");
     await page.getByRole("button", { name: "Agregar al carrito" }).click();

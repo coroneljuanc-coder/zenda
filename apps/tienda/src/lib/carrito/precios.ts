@@ -27,6 +27,11 @@ export function calcularEnvio(subtotal: number): number {
   return subtotal >= UMBRAL_ENVIO_GRATIS ? 0 : TARIFA_ENVIO;
 }
 
+/** ZTV-19, RN3: total a pagar = subtotal + envío (todo con IVA incluido, D4). */
+export function calcularTotal(subtotal: number): number {
+  return subtotal + calcularEnvio(subtotal);
+}
+
 /** Escenario 2: cuánto falta para el envío gratis (0 si ya lo tiene). */
 export function faltaParaEnvioGratis(subtotal: number): number {
   return Math.max(0, UMBRAL_ENVIO_GRATIS - subtotal);
