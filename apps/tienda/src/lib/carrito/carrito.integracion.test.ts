@@ -5,7 +5,13 @@ import { join } from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { PrismaClient } from "../../generated/prisma/client";
-import { agregarAlCarrito, contarUnidades } from "./carrito";
+import {
+  agregarAlCarrito,
+  cambiarCantidad,
+  contarUnidades,
+  eliminarLinea,
+  TEXTO_SIN_MAS_UNIDADES,
+} from "./carrito";
 
 const envLocal = join(import.meta.dirname, "../../../.env.local");
 if (!process.env.DATABASE_URL && existsSync(envLocal)) process.loadEnvFile(envLocal);
@@ -151,5 +157,99 @@ describe("agregarAlCarrito (ZTV-16)", () => {
     await expect(
       bd.lineaCarrito.updateMany({ where: { varianteId }, data: { cantidad: 11 } }),
     ).rejects.toThrow(/LineaCarrito_cantidad_rango/);
+  });
+});
+
+/** Agrega una variante y devuelve el token y el id de la línea. */
+async function conLinea(varianteId: string, cantidad: number) {
+  const r = await agregarAlCarrito(bd, { varianteId, cantidad });
+  if (!r.ok) throw new Error(r.mensaje);
+  const linea = await bd.lineaCarrito.findFirstOrThrow({ where: { varianteId } });
+  return { token: r.token, lineaId: linea.id };
+}
+
+describe("cambiarCantidad y eliminarLinea (ZTV-18)", () => {
+  it("escenario 1 · sube y baja la cantidad de la línea", async () => {
+    const varianteId = await crearVariante({ stock: 15 });
+    const { token, lineaId } = await conLinea(varianteId, 2);
+
+    expect(await cambiarCantidad(bd, { token, lineaId, cantidad: 3 })).toEqual({
+      ok: true,
+      cantidad: 3,
+      unidadesEnCarrito: 3,
+    });
+    expect(await cambiarCantidad(bd, { token, lineaId, cantidad: 1 })).toMatchObject({
+      ok: true,
+      cantidad: 1,
+    });
+  });
+
+  it("CAR-03-CP4 · con stock 3 y 3 en el carrito, pedir 4 se rechaza y queda en 3", async () => {
+    const varianteId = await crearVariante({ stock: 3 });
+    const { token, lineaId } = await conLinea(varianteId, 3);
+
+    expect(await cambiarCantidad(bd, { token, lineaId, cantidad: 4 })).toEqual({
+      ok: false,
+      mensaje: TEXTO_SIN_MAS_UNIDADES,
+      cantidad: 3,
+    });
+    expect((await bd.lineaCarrito.findUniqueOrThrow({ where: { id: lineaId } })).cantidad).toBe(3);
+  });
+
+  it("RN1 · no baja de 1 ni sube de 10 aunque haya más stock", async () => {
+    const varianteId = await crearVariante({ stock: 50 });
+    const { token, lineaId } = await conLinea(varianteId, 5);
+    expect(await cambiarCantidad(bd, { token, lineaId, cantidad: 0 })).toMatchObject({ ok: false });
+    expect(await cambiarCantidad(bd, { token, lineaId, cantidad: 11 })).toMatchObject({
+      ok: false,
+      cantidad: 5,
+    });
+  });
+
+  it("RN4 · nadie puede cambiar ni eliminar una línea de otro carrito", async () => {
+    const varianteId = await crearVariante({ stock: 15 });
+    const { lineaId } = await conLinea(varianteId, 2);
+    const otro = await agregarAlCarrito(bd, {
+      varianteId: await crearVariante({ stock: 5, slug: "taza" }),
+      cantidad: 1,
+    });
+    if (!otro.ok) throw new Error("debía agregar");
+
+    expect(await cambiarCantidad(bd, { token: otro.token, lineaId, cantidad: 3 })).toMatchObject({
+      ok: false,
+    });
+    expect(await eliminarLinea(bd, { token: otro.token, lineaId })).toMatchObject({ ok: false });
+    expect((await bd.lineaCarrito.findUniqueOrThrow({ where: { id: lineaId } })).cantidad).toBe(2);
+  });
+
+  it("escenario 2 · eliminar quita la línea y «Deshacer» la devuelve con la misma cantidad", async () => {
+    const varianteId = await crearVariante({ stock: 15 });
+    const { token, lineaId } = await conLinea(varianteId, 4);
+
+    const eliminado = await eliminarLinea(bd, { token, lineaId });
+    expect(eliminado).toEqual({ ok: true, producto: "Producto camiseta", varianteId, cantidad: 4 });
+    expect(await contarUnidades(bd, token)).toBe(0); // RN3: el carrito queda vacío
+
+    // «Deshacer» = volver a agregar la misma variante y cantidad (RN2).
+    if (!eliminado.ok) throw new Error("debía eliminar");
+    const devuelto = await agregarAlCarrito(bd, {
+      token,
+      varianteId: eliminado.varianteId,
+      cantidad: eliminado.cantidad,
+    });
+    expect(devuelto).toMatchObject({ ok: true, unidadesEnCarrito: 4 });
+  });
+
+  it("RN2 · si el stock ya no alcanza, «Deshacer» no devuelve la línea y lo explica", async () => {
+    const varianteId = await crearVariante({ stock: 5 });
+    const { token, lineaId } = await conLinea(varianteId, 4);
+    await eliminarLinea(bd, { token, lineaId });
+    await bd.varianteProducto.update({ where: { id: varianteId }, data: { stock: 2 } });
+
+    expect(await agregarAlCarrito(bd, { token, varianteId, cantidad: 4 })).toEqual({
+      ok: false,
+      mensaje: "Solo hay 2 unidades disponibles.",
+      unidadesEnCarrito: 0,
+    });
   });
 });

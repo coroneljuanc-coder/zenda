@@ -1,32 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
+import { agregarDesdeFicha as agregar } from "./ayudas";
 
 // Datos de ejemplo (datos-ejemplo.ts): camiseta $ 49.900 (M / Negro, stock 15) y lámpara
 // $ 89.900 (Negro, stock 12). 2 × 49.900 + 89.900 = $ 189.700; faltan $ 10.300 para el envío gratis.
 // Cada prueba abre un navegador nuevo, así que empieza con el carrito vacío.
-
-/** Agrega un producto desde su ficha, como lo haría una persona. */
-async function agregar(
-  page: Page,
-  slug: string,
-  { talla, color, cantidad = 1 }: { talla?: string; color?: string; cantidad?: number } = {},
-) {
-  await page.goto(`/producto/${slug}`);
-  for (const [titulo, valor] of [
-    ["Talla", talla],
-    ["Color", color],
-  ] as const) {
-    if (!valor) continue;
-    const grupo = page.getByRole("group", { name: new RegExp(`^${titulo}`) });
-    const radio = page.getByRole("radio", { name: valor, exact: true });
-    await expect(radio).toBeEnabled(); // la ficha ya está lista (ZTV-73)
-    await grupo.locator("label").filter({ has: radio }).click();
-  }
-  for (let i = 1; i < cantidad; i++) {
-    await page.getByRole("button", { name: "Aumentar cantidad" }).click();
-  }
-  await page.getByRole("button", { name: "Agregar al carrito" }).click();
-  await expect(page.locator('[data-prueba="aviso-carrito"]')).toContainText("Agregaste");
-}
 
 async function armarCarritoDeEjemplo(page: Page) {
   await agregar(page, "camiseta-basica-algodon", { talla: "M", color: "Negro", cantidad: 2 });
@@ -47,7 +24,7 @@ test.describe("Ver el carrito (ZTV-17)", () => {
     await expect(lineas.nth(0)).toContainText("Camiseta básica de algodón");
     await expect(lineas.nth(0)).toContainText("M / Negro");
     await expect(lineas.nth(0)).toContainText("Precio unitario: $ 49.900");
-    await expect(lineas.nth(0)).toContainText("Cantidad: 2");
+    await expect(lineas.nth(0).locator('[data-prueba="cantidad-linea"]')).toHaveText("2");
     await expect(lineas.nth(0).locator('[data-prueba="total-linea"]')).toHaveText("$ 99.800");
     await expect(lineas.nth(0).getByRole("img")).toHaveAttribute("alt", /^Foto de ejemplo: /);
     await expect(lineas.nth(1).locator('[data-prueba="total-linea"]')).toHaveText("$ 89.900");

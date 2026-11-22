@@ -4,7 +4,11 @@ import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { obtenerBD } from "@/lib/bd";
-import { agregarAlCarrito as agregarEnBase } from "@/lib/carrito/carrito";
+import {
+  agregarAlCarrito as agregarEnBase,
+  cambiarCantidad as cambiarEnBase,
+  eliminarLinea as eliminarEnBase,
+} from "@/lib/carrito/carrito";
 import { COOKIE_CARRITO, opcionesCookieCarrito } from "@/lib/carrito/cookie";
 import { MAXIMO_POR_LINEA, textoAgregado } from "@/lib/carrito/reglas";
 
@@ -43,4 +47,49 @@ export async function agregarAlCarrito(entrada: unknown): Promise<RespuestaAgreg
     aviso: textoAgregado(resultado.cantidad, resultado.producto),
     unidadesEnCarrito: resultado.unidadesEnCarrito,
   };
+}
+
+const EntradaCambiar = z.object({
+  lineaId: z.string().min(1).max(64),
+  cantidad: z.number().int().min(1).max(MAXIMO_POR_LINEA),
+});
+
+export type RespuestaCambiar =
+  { ok: true; cantidad: number } | { ok: false; mensaje: string; cantidad: number | null };
+
+/** ZTV-18, escenarios 1 y 4: cambia la cantidad de una línea del carrito del visitante. */
+export async function cambiarCantidad(entrada: unknown): Promise<RespuestaCambiar> {
+  const datos = EntradaCambiar.safeParse(entrada);
+  if (!datos.success) {
+    return { ok: false, mensaje: "No pudimos cambiar la cantidad.", cantidad: null };
+  }
+  const token = (await cookies()).get(COOKIE_CARRITO)?.value;
+  const resultado = await cambiarEnBase(obtenerBD(), { token, ...datos.data });
+  // Totales, subtotal y contador del encabezado se vuelven a dibujar sin recargar la página.
+  refresh();
+  return resultado.ok ? { ok: true, cantidad: resultado.cantidad } : resultado;
+}
+
+const EntradaEliminar = z.object({ lineaId: z.string().min(1).max(64) });
+
+export type RespuestaEliminar =
+  | { ok: true; producto: string; varianteId: string; cantidad: number }
+  | { ok: false; mensaje: string };
+
+/** ZTV-18, escenario 2: quita una línea; devuelve lo necesario para «Deshacer». */
+export async function eliminarDelCarrito(entrada: unknown): Promise<RespuestaEliminar> {
+  const datos = EntradaEliminar.safeParse(entrada);
+  if (!datos.success) return { ok: false, mensaje: "No pudimos quitar este producto." };
+  const token = (await cookies()).get(COOKIE_CARRITO)?.value;
+  const resultado = await eliminarEnBase(obtenerBD(), { token, ...datos.data });
+  refresh();
+  return resultado;
+}
+
+/**
+ * ZTV-18, RN2: «Deshacer» devuelve la misma variante y cantidad si sigue habiendo stock. Usa las
+ * mismas reglas que «Agregar al carrito»; si ya no alcanza, explica por qué.
+ */
+export async function deshacerEliminacion(entrada: unknown): Promise<RespuestaAgregar> {
+  return agregarAlCarrito(entrada);
 }
