@@ -16,7 +16,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 2
-**Estado:** Por hacer
+**Estado:** En pruebas (lista para la Sprint Review del Sprint 2)
 
 ### Historia
 Como visitante,
@@ -93,8 +93,11 @@ No aplica (el recordatorio de carrito abandonado es de E9).
 | CAR-01-CP6 | 3 | Integración | Petición directa al servidor con un producto agotado | Rechazada (no depende del botón) |
 
 ### Notas técnicas
-- Server Action `agregarAlCarrito(varianteId, cantidad)` con validación Zod y consulta de stock en el servidor.
-- Lógica pura `validarCantidad()` en `src/lib/carrito.ts` (pruebas unitarias con valores límite 0, 1, 10, 11 y stock).
+- Server Action `agregarAlCarrito` (`app/acciones/carrito.ts`, zod); stock y límites validados en el servidor dentro de una transacción (`lib/carrito/carrito.ts`).
+- Reglas puras en `lib/carrito/reglas.ts`: `validarCantidad` (valores límite 0, 1, 10, 11 y stock), `cantidadMaxima`, `vencimientoDesde` y `textoAgregado`.
+- Tablas Carrito y LineaCarrito con única (carritoId, varianteId) y CHECK de cantidad 1–10. Cookie `zenda_carrito` HttpOnly, Secure, SameSite=Lax, 30 días.
+- **Ajuste a RN6:** la línea guarda también `precioVisto`, solo para avisar «El precio de este producto cambió» (CAR-02). Se cobra y suma siempre el precio vigente del catálogo.
+- Defecto ZTV-73 («En Sprint»): los toques antes de que la ficha terminara de cargar se perdían; los controles se activan cuando la página está lista. PR #30.
 - Una tarea de limpieza de carritos vencidos queda para E9.
 
 ### Definición de Listo (DoR)
@@ -124,7 +127,7 @@ No aplica (el recordatorio de carrito abandonado es de E9).
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 2
-**Estado:** Por hacer
+**Estado:** En pruebas (lista para la Sprint Review del Sprint 2)
 
 ### Historia
 Como visitante,
@@ -198,8 +201,10 @@ Lee **Carrito**, **LineaCarrito**, **VarianteProducto**, **Producto** e **Imagen
 | CAR-02-CP7 | 1 | E2E | Celular 390×844 | El resumen y el botón son visibles sin desplazamiento horizontal |
 
 ### Notas técnicas
-- `src/lib/precios.ts`: `calcularSubtotal()`, `calcularEnvio()`, `faltaParaEnvioGratis()`, con el umbral y la tarifa configurables (constantes en un solo lugar).
-- Ruta `src/app/carrito/page.tsx` (Server Component).
+- `lib/carrito/precios.ts`: `TARIFA_ENVIO` (12.000), `UMBRAL_ENVIO_GRATIS` (200.000), `totalLinea`, `calcularSubtotal`, `calcularEnvio`, `faltaParaEnvioGratis`.
+- `lib/carrito/consulta.ts` → `consultarCarrito`: precios y stock vigentes, líneas no disponibles marcadas, cantidades ajustadas al stock en la BD (RN4) y aviso de precio mostrado una sola vez.
+- Ruta `app/carrito/page.tsx`: se arma en cada visita y no se indexa. «Continuar con la compra» queda listo para el Sprint 3.
+- **Datos de prueba reales:** camiseta $ 49.900 y lámpara $ 89.900 → escenario 1 = **$ 189.700** (faltan $ 10.300 para el envío gratis). PR #31.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
@@ -228,7 +233,7 @@ Lee **Carrito**, **LineaCarrito**, **VarianteProducto**, **Producto** e **Imagen
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 2
-**Estado:** Por hacer
+**Estado:** En pruebas (lista para la Sprint Review del Sprint 2)
 
 ### Historia
 Como visitante,
@@ -297,7 +302,10 @@ Actualiza o elimina **LineaCarrito**; actualiza **Carrito.actualizadoEn**.
 | CAR-03-CP5 | 1 | E2E | 5 clics rápidos en "+" con stock 10 | Cantidad final coherente (7) en pantalla y en la BD |
 
 ### Notas técnicas
-- Server Actions `actualizarCantidad()` y `eliminarLinea()`; actualización optimista con `useOptimistic` y corrección si el servidor rechaza el cambio.
+- Server Actions `cambiarCantidad`, `eliminarDelCarrito` y `deshacerEliminacion`; en la BD, `cambiarCantidad` y `eliminarLinea` solo tocan líneas del carrito de la cookie (RN4) y respetan el máximo (RN1).
+- `ControlesLinea` cambia la cantidad al instante y la corrige si el servidor no la acepta; los toques rápidos se calculan sobre la última cantidad pedida (5 toques desde 2 → 7).
+- `ZonaCarrito` conserva «Eliminaste {producto} del carrito» + «Deshacer» durante 5 s aunque el carrito quede vacío (RN2, RN3).
+- **Datos de prueba reales:** camiseta $ 49.900 → CP1 da $ 149.700; CP5 con stock 15; escenario 4 con la chaqueta L (stock 3). PR #32.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros

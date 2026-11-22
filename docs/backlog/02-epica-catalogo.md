@@ -520,7 +520,7 @@ No aplica.
 **Tipo:** Historia
 **Prioridad (MoSCoW):** Should
 **Estimación:** 3
-**Sprint:** 2
+**Sprint:** Backlog (salió del Sprint 2 en la planeación del 2026-11-20 por capacidad)
 **Estado:** Por hacer
 
 ### Historia
@@ -623,8 +623,8 @@ Lee **Producto** (nombre, descripcion, activo).
 **Tipo:** Historia
 **Prioridad (MoSCoW):** Should (D5)
 **Estimación:** 5
-**Sprint:** 2 o posterior (según capacidad y D5)
-**Estado:** Por hacer
+**Sprint:** 2
+**Estado:** En pruebas (lista para la Sprint Review del Sprint 2)
 
 ### Historia
 Como visitante,
@@ -693,7 +693,11 @@ Lee **VarianteProducto** (sku, talla, color, stock, precio).
 | CAT-06-CP5 | 1 | Unitaria | `ordenarTallas(["L","XS","M"])` | ["XS","M","L"] |
 
 ### Notas técnicas
-- Componente cliente `SelectorVariantes`; el estado se sincroniza con la URL (`useSearchParams`) para poder compartir el enlace de una variante.
+- Lógica pura en `lib/catalogo/variantes.ts` (`ordenarTallas`, `opcionesDe`, `seleccionInicial`, `buscarVariante`, `evaluarSeleccion`, `opcionDisponible`, `textoFalta`), con pruebas unitarias. `consultarProducto` devuelve las variantes con el precio ya resuelto (RN1).
+- Componente cliente `CompraProducto`: radios accesibles «Talla» y «Color» (mínimo 44×44 px). Lee `?variante={sku}` una vez al abrir y actualiza la dirección al elegir, sin recargar.
+- Las opciones agotadas se anuncian con «(agotada)» y se ven tachadas; si solo hay una talla o un color, queda elegido de una vez.
+- **Datos de prueba reales (CAT-06-CP2):** el seed no tiene «L / Blanco» con stock 0 (la camiseta no existe en Blanco talla L). CP2 se prueba con la chaqueta talla S (stock 0) y con camiseta L + Blanco, que se muestra agotada porque no existe.
+- Defecto relacionado: ZTV-73, corregido en ZTV-16. PR #29.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
