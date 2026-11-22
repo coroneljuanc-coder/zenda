@@ -500,6 +500,7 @@ Escenario 4: Sin duplicados (alterno)
 - RN2: Los montos del correo salen de los datos del evento (copia del pedido, RN2 de COM-02), no del catálogo actual.
 - RN3: El correo del vendedor (`CORREO_VENDEDOR`) y la llave de Resend viven solo en el servicio de Notificaciones.
 - RN4: Mientras Zenda esté en modo de pruebas, todo correo incluye: "Este es un pedido de prueba. No se realizó ningún cobro real."
+- RN5 (decisión del PO en la planeación del Sprint 4, 2026-11-22): mientras Zenda esté en modo de pruebas, **todos los correos llegan a `CORREO_VENDEDOR`** (el PO) y la confirmación dice a quién iba dirigida: "Para: ana@ejemplo.com (modo de pruebas)". Sin dominio propio verificado, Resend solo permite enviar al dueño de la cuenta. Cuando haya dominio y ventas reales, se activa `ZENDA_CORREOS_REALES=1`.
 
 ### Requisitos no funcionales
 - Seguridad: la llave de Resend es una variable de entorno; el correo no incluye datos de pago, solo el método (ej. "Tarjeta terminada en 4242" si Wompi lo informa).
@@ -537,11 +538,15 @@ Escenario 4: Sin duplicados (alterno)
 | COM-05-CP3 | 2 | Integración | Pedido PAGADO | Correo al `CORREO_VENDEDOR` con los datos de contacto |
 | COM-05-CP4 | 3 | Integración | Resend simulado que falla 3 veces | 3 intentos; estadoCorreo = FALLIDO; pedido sigue PAGADO |
 | COM-05-CP5 | 4 | Integración | Reprocesar APPROVED | Sin segundo envío |
-| COM-05-CP6 | 1 | Unitaria | Snapshot: 2 × $ 45.000 + 1 × $ 60.000, envío $ 12.000 | HTML y texto con "$ 90.000", "$ 60.000", envío "$ 12.000" y total "$ 162.000" |
+| COM-05-CP6 | 1 | Unitaria | Copia del pedido del seed (A8): 3 × Camiseta M / Negro a $ 49.900, envío $ 12.000 | HTML y texto con "3 × $ 49.900", "$ 149.700", envío "$ 12.000" y total "$ 161.700" |
+| COM-05-CP7 | RN5 | Integración | Modo de pruebas | Ambos correos van a `CORREO_VENDEDOR`; la confirmación dice "Para: ana@ejemplo.com (modo de pruebas)" |
 
 ### Notas técnicas
-- Plantillas con React Email; envío con el SDK de Resend.
-- El código vive en `apps/notificaciones`. El servicio responde "recibido" y envía después con `after()` de Next.js; si se necesitan reintentos con espera, se usan Vercel Workflows.
+- Plantillas en `apps/notificaciones/src/lib/correos/plantillas.ts` (HTML con tablas simples y texto plano, con los datos escapados). Se descartó React Email para no sumar dependencias.
+- Envío con la API de Resend por `fetch` (`POST https://api.resend.com/emails`), con `Idempotency-Key` por evento y tipo para que un reintento no duplique el correo. Remitente de pruebas `onboarding@resend.dev`.
+- El servicio responde "recibido" a la tienda y envía después con `after()` de Next.js: hasta 3 intentos, con 2 y 5 segundos de espera. Si fallan, el correo queda FALLIDO con `[ALERTA] Correo pendiente` en los registros.
+- Tabla `EnvioCorreo` con llave única evento + tipo (RN1, escenario 4); se reserva el envío con un cambio atómico, así dos procesos a la vez no duplican el correo.
+- Variables en `zenda-notificaciones`: `RESEND_API_KEY` y `CORREO_VENDEDOR` (las carga el PO); opcionales `CORREO_REMITENTE` y `ZENDA_CORREOS_REALES`.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
