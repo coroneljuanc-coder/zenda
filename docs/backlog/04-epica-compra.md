@@ -367,16 +367,16 @@ No aplica (sin pantalla para el cliente; el resultado se ve en COM-04).
 
 ### Historia
 Como cliente,
-quiero ver claramente si mi pago fue aprobado, rechazado o sigue pendiente al volver de Wompi,
+quiero ver claramente si mi pago fue aprobado, rechazado o sigue pendiente al volver de Mercado Pago,
 para saber si mi compra quedó hecha o si debo intentarlo de nuevo.
 
 ### Contexto
-Después de pagar, Wompi devuelve al cliente a Zenda. Sin un mensaje claro, el cliente puede pagar dos veces o creer que compró cuando no fue así.
+Después de pagar, Mercado Pago (D1, desde ZTV-86) devuelve al cliente a Zenda. Sin un mensaje claro, el cliente puede pagar dos veces o creer que compró cuando no fue así.
 
 ### Criterios de aceptación
 Escenario 1: Pago aprobado (camino feliz)
   Dado que mi pedido quedó "Pagado"
-  Cuando Wompi me devuelve a Zenda
+  Cuando Mercado Pago me devuelve a Zenda
   Entonces veo "¡Gracias por tu compra, Ana!", "Tu pedido ZEN-20261115-7K3QD fue confirmado", el resumen de productos, el total pagado y la dirección de entrega, y el aviso "Te enviamos la confirmación a ana@ejemplo.com"
 
 Escenario 2: Pago pendiente (alterno)
@@ -396,7 +396,7 @@ Escenario 4: Enlace inválido (error)
 
 ### Reglas de negocio
 - RN1: La página solo muestra el pedido si la referencia **y** el token de acceso coinciden (protege los datos personales del cliente).
-- RN2: Si el pedido sigue "Pendiente de pago" pero Wompi devolvió un id de transacción, Zenda consulta el estado a la API de Wompi y lo actualiza, aplicando las mismas reglas de COM-03.
+- RN2: Si el pedido sigue "Pendiente de pago" pero Mercado Pago devolvió el id del pago (`payment_id`), Zenda consulta el pago a Mercado Pago con su credencial privada y lo actualiza con las mismas reglas de COM-03 (solo si el pago es de este pedido).
 - RN3: Si después de 2 minutos sigue pendiente, se muestra "Te avisaremos por correo cuando tu banco confirme el pago."
 - RN4: Se muestra el celular enmascarado (ej. "300 *** 4567").
 
@@ -427,15 +427,18 @@ Lee **Pedido** y **LineaPedido**; puede actualizar **Pedido** mediante la consul
 | ID caso | Escenario | Tipo | Datos de prueba | Resultado esperado |
 |---|---|---|---|---|
 | COM-04-CP1 | 1 | E2E | Pago sandbox con tarjeta aprobada | Mensaje de gracias y resumen correcto |
-| COM-04-CP2 | 2 | Integración | Pedido pendiente + respuesta de Wompi PENDING | Mensaje de espera y actualización automática |
+| COM-04-CP2 | 2 | Integración + E2E | Pedido pendiente + Mercado Pago responde pendiente | Sigue pendiente; mensaje de espera y "Esta página se actualiza sola." |
 | COM-04-CP3 | 3 | E2E | Pago sandbox con tarjeta rechazada | Mensaje de rechazo; "Intentar de nuevo" lleva al carrito con productos |
 | COM-04-CP4 | 4 | E2E | Referencia válida + token incorrecto | 404 sin datos |
 | COM-04-CP5 | 1 | Unitaria | `enmascararCelular("3001234567")` | "300 *** 4567" |
-| COM-04-CP6 | 2 | Integración | Webhook no recibido + API de Wompi APPROVED | El pedido pasa a PAGADO mediante el respaldo |
+| COM-04-CP6 | 2 | Integración | Aviso no recibido + Mercado Pago responde aprobado | El pedido pasa a PAGADO mediante el respaldo y queda el evento para los correos |
 
 ### Notas técnicas
-- Ruta `src/app/pedido/resultado/page.tsx`; consulta de respaldo a `GET /v1/transactions/{id}` de Wompi (sandbox).
-- La actualización automática se hace con un componente cliente con un intervalo limitado.
+- Ruta `src/app/pedido/resultado/page.tsx`; lógica en `lib/compra/resultado.ts` (`consultarResultado`, `enmascararCelular`, `idPagoDeRegreso`). Respaldo con `GET /v1/payments/{id}` de Mercado Pago y `procesarPago`; si deja el pedido pagado, entrega el evento de ZTV-25 con `after()`.
+- La actualización automática es el componente cliente `EsperaConfirmacion`: `router.refresh()` cada 5 s durante 2 min; luego muestra el mensaje de RN3.
+- Estados: PAGADO → gracias; PENDIENTE_PAGO → espera; PAGO_RECHAZADO o CANCELADO → "Intentar de nuevo"; REQUIERE_REVISION → "Estamos revisando tu pago. Te contactaremos pronto.".
+- Modo de pruebas: bajo "Te enviamos la confirmación a…" se aclara que por ahora los correos llegan al correo de la tienda (RN5 de COM-05).
+- La página se transmite por partes (Suspense): un enlace inválido muestra la página 404 de Zenda con código HTTP 200. Las E2E crean los pedidos directo en la base (`e2e/tienda/pedidos-bd.ts`).
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
