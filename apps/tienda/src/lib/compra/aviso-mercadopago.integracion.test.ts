@@ -85,6 +85,48 @@ describe("aviso de Mercado Pago (ZTV-86)", () => {
     expect(await bd.eventoPago.findFirstOrThrow()).toMatchObject({ resultado: "firma-invalida" });
   });
 
+  it("ZTV-90 · sin clave secreta, un aviso sin firma se atiende consultando el pago (RN3)", async () => {
+    const { referencia } = await pedidoPendiente();
+    const sinFirma = { ...aviso("123456789"), encabezados: new Headers() };
+    const consultados: string[] = [];
+    const r = await atenderAvisoMercadoPago(bd, sinFirma, {
+      secreto: null,
+      consultar: async (id) => {
+        consultados.push(id);
+        return aprobado(referencia);
+      },
+    });
+    expect(r).toEqual({ estado: 200 });
+    expect(consultados).toEqual(["123456789"]);
+    expect((await bd.pedido.findFirstOrThrow()).estado).toBe("PAGADO");
+  });
+
+  it("ZTV-90 · sin clave secreta, un pago que Mercado Pago no confirma no cambia el pedido", async () => {
+    await pedidoPendiente();
+    const sinFirma = { ...aviso("999"), encabezados: new Headers() };
+    const r = await atenderAvisoMercadoPago(bd, sinFirma, {
+      secreto: null,
+      consultar: async () => null,
+    });
+    expect(r).toEqual({ estado: 502 });
+    expect((await bd.pedido.findFirstOrThrow()).estado).toBe("PENDIENTE_PAGO");
+  });
+
+  it("con clave secreta, un aviso sin firma se rechaza con 400 (escenario 3)", async () => {
+    await pedidoPendiente();
+    let consultas = 0;
+    const sinFirma = { ...aviso("123456789"), encabezados: new Headers() };
+    const r = await atenderAvisoMercadoPago(bd, sinFirma, {
+      secreto: SECRETO,
+      consultar: async () => {
+        consultas++;
+        return null;
+      },
+    });
+    expect(r).toEqual({ estado: 400 });
+    expect(consultas).toBe(0);
+  });
+
   it("un aviso firmado que no es de un pago se responde 200 sin hacer nada", async () => {
     await pedidoPendiente();
     const r = await atenderAvisoMercadoPago(bd, aviso("777", SECRETO, "merchant_order"), {

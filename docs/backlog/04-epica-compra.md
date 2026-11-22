@@ -609,6 +609,7 @@ Entonces veo "No pudimos conectar con la pasarela de pago. Tu carrito sigue guar
 - RN1: Solo se aceptan pagos de prueba mientras la tienda esté en pruebas. Ajustada en ZTV-89 (2026-11-22): Mercado Pago entrega hoy el Access Token de prueba con el prefijo `APP_USR-` (antes `TEST-`), igual que el de producción. Se aceptan ambos prefijos y, antes de crear la orden de pago, Zenda confirma con `/users/me` que la cuenta es de prueba (etiqueta `test_user`); si no lo es o no se puede confirmar, no cobra (escenario 4) y deja una alerta. No se usa `live_mode`: Mercado Pago advierte que los pagos de prueba con `APP_USR-` pueden llegar con `live_mode: true`.
 - RN2: El monto y los productos de la orden de pago los fija el servidor con la copia del pedido.
 - RN3: El estado del pago no se toma del aviso: Zenda lo consulta a Mercado Pago con su credencial privada.
+- RN5 (ZTV-90, aprobada por el PO el 2026-11-22): la firma del aviso se verifica solo si `MERCADOPAGO_SECRETO_WEBHOOK` está configurada. Sin ella, el aviso se atiende igual porque RN3 garantiza que nada cambia sin la confirmación de Mercado Pago. Motivo: los pagos de prueba los cobra el vendedor de prueba que crea Mercado Pago, cuyos avisos no se firman con la clave de la aplicación, y el panel no deja copiar esa clave.
 - RN4: Se conservan las reglas de COM-02 (revalidación, doble clic, referencia) y de COM-03 (transacción, idempotencia, stock no negativo, "Requiere revisión").
 
 ### Requisitos no funcionales
@@ -652,6 +653,7 @@ No aplica (el correo es COM-05).
 | COM-07-CP4 | 4         | Unitaria + E2E           | Mercado Pago con error, sin respuesta o sin credenciales | Mensaje exacto; pedido CANCELADO; carrito intacto                                                    |
 | COM-07-CP5 | 1 y 2     | Aceptación (sandbox)     | Comprador y tarjeta de prueba de Mercado Pago            | El pedido llega a PAGADO                                                                             |
 | COM-07-CP6 | RN1 | Unitaria | Token `APP_USR-…` de una cuenta con y sin la etiqueta `test_user` | Con `test_user` crea la orden de pago; sin ella, o si no se puede confirmar, no la crea (ZTV-89) |
+| COM-07-CP7 | RN5 | Integración | Aviso sin firma, con y sin clave secreta configurada | Sin clave: se consulta el pago y se aplica (PAGADO); sin confirmación de Mercado Pago, nada cambia. Con clave: 400 (ZTV-90) |
 
 ### Notas técnicas
 
