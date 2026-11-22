@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { Buscador } from "./Buscador";
 import { ContadorCarrito, EnlaceCarrito } from "./ContadorCarrito";
 import { EnlaceCategoria } from "./EnlaceCategoria";
 import { listarCategoriasMenu } from "@/lib/catalogo/menu";
@@ -10,6 +11,7 @@ import { MenuCelular } from "./MenuCelular";
  * Menú de categorías desde la base de datos, en el orden del campo `orden` (RN1, ZTV-35):
  * en escritorio se ve en línea; en celular se abre con el botón «Menú».
  * La bolsa lleva al carrito y muestra cuántas unidades tiene (ZTV-16).
+ * Buscador (ZTV-14): en escritorio, a la vista; en celular, se abre con la lupa.
  */
 export async function Encabezado() {
   const categorias = await listarCategoriasMenu();
@@ -39,9 +41,13 @@ export async function Encabezado() {
             ))}
           </ul>
         </nav>
-        <Suspense fallback={<EnlaceCarrito unidades={null} />}>
-          <ContadorCarrito />
-        </Suspense>
+        <div className="flex items-center gap-2 justify-self-end">
+          <Buscador variante="escritorio" />
+          <Buscador variante="celular" />
+          <Suspense fallback={<EnlaceCarrito unidades={null} />}>
+            <ContadorCarrito />
+          </Suspense>
+        </div>
       </div>
     </header>
   );
