@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
 /**
@@ -62,6 +62,14 @@ export type EventoPedidoPagado = z.infer<typeof EsquemaEventoPedidoPagado>;
 
 function hmac(cuerpo: string, segundos: number, secreto: string): string {
   return createHmac("sha256", secreto).update(`${segundos}.${cuerpo}`).digest("hex");
+}
+
+/**
+ * Huella de la clave compartida para diagnóstico: 8 caracteres del SHA-256 de la clave. Sirve para
+ * comparar en los registros si la tienda y Notificaciones tienen la misma clave, sin revelarla.
+ */
+export function huellaClave(secreto: string): string {
+  return createHash("sha256").update(secreto).digest("hex").slice(0, 8);
 }
 
 /** Firma el cuerpo exacto que se envía (RN4). `ahora` permite probar con un reloj fijo. */

@@ -1,6 +1,7 @@
 import {
   ENCABEZADO_FIRMA,
   EsquemaEventoPedidoPagado,
+  huellaClave,
   verificarFirmaEvento,
   type EventoPedidoPagado,
 } from "@zenda/contratos";
@@ -22,7 +23,9 @@ export async function recibirEvento(
 ): Promise<ResultadoRecepcion> {
   const firma = verificarFirmaEvento(cuerpo, encabezados.get(ENCABEZADO_FIRMA), secreto, ahora);
   if (firma !== "valida") {
-    console.error(`[ALERTA] Evento rechazado: firma ${firma}`);
+    console.error(
+      `[ALERTA] Evento rechazado: firma ${firma} (huella de la clave: ${huellaClave(secreto)})`,
+    );
     return { estado: 401 };
   }
 

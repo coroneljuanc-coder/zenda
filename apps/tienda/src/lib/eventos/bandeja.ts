@@ -4,6 +4,7 @@ import {
   TIPO_PEDIDO_PAGADO,
   VERSION_PEDIDO_PAGADO,
   firmarEvento,
+  huellaClave,
   type DatosPedidoPagado,
   type EventoPedidoPagado,
 } from "@zenda/contratos";
@@ -148,6 +149,11 @@ export async function entregarEventosPendientes(
       });
       if (!r.ok) {
         error = `HTTP ${r.status}`;
+        if (r.status === 401) {
+          console.error(
+            `[ALERTA] Notificaciones rechazó la firma del evento ${e.id} (huella de la clave de la tienda: ${huellaClave(config.secreto)})`,
+          );
+        }
         // 400: el servicio dice que el evento no cumple el contrato; reintentar no lo arregla.
         permanente = r.status === 400;
       }
