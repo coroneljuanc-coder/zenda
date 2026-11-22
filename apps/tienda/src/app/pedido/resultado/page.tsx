@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Tu pedido", robots: { index: false, 
 
 const TEXTO_ESTADO = {
   PENDIENTE_PAGO:
-    "Estamos esperando la confirmación de Wompi. Vuelve a cargar esta página en unos segundos.",
+    "Estamos esperando la confirmación de Mercado Pago. Vuelve a cargar esta página en unos segundos.",
   PAGADO: "¡Pago aprobado! Recibimos tu pedido.",
   PAGO_RECHAZADO:
     "El pago no fue aprobado. Tu carrito sigue guardado para que lo intentes de nuevo.",
@@ -19,7 +19,7 @@ const TEXTO_ESTADO = {
 } as const;
 
 /**
- * Página a la que Wompi devuelve al cliente (ZTV-20). Versión básica: muestra la referencia y el
+ * Página a la que Mercado Pago devuelve al cliente (ZTV-20 y ZTV-86). Versión básica: muestra la referencia y el
  * estado guardado del pedido. La experiencia completa del resultado llega con ZTV-22 (Sprint 4).
  * Solo se ve con la referencia y el token aleatorio del pedido: no expone datos de otros.
  */

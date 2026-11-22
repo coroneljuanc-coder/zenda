@@ -1,25 +1,27 @@
 import { expect, test } from "@playwright/test";
 import { irAlResumen } from "./ayudas";
 
-// ZTV-20. Sin las llaves de prueba de Wompi (como en el CI), «Pagar» debe explicar que no pudo
-// conectar con la pasarela y no dejar al cliente en un pago roto. Con las llaves (ambiente de
-// revisión), llega al Web Checkout de Wompi con el monto correcto.
-const hayLlaves = Boolean(process.env.WOMPI_LLAVE_PUBLICA);
+// ZTV-20 y ZTV-86. Sin las credenciales de prueba de Mercado Pago (como en el CI), «Pagar» debe explicar que no pudo
+// conectar con la pasarela y no dejar al cliente en un pago roto. Con las credenciales (ambiente de
+// revisión), llega a la página de pago de Mercado Pago.
+const hayLlaves = Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN);
 
 test.describe("Crear pedido y redirigir al pago (ZTV-20)", () => {
-  test("el resumen avisa que el pago es en Wompi y en modo de pruebas", async ({ page }) => {
+  test("el resumen avisa que el pago es en Mercado Pago y en modo de pruebas", async ({ page }) => {
     await irAlResumen(page);
     await expect(
       page
         .getByRole("main")
-        .getByText(/Serás dirigido a Wompi.*Modo de pruebas: no se realizan cobros reales\./),
+        .getByText(
+          /Serás dirigido a Mercado Pago.*Modo de pruebas: no se realizan cobros reales\./,
+        ),
     ).toBeVisible();
   });
 
-  test("COM-02-CP5 · sin conexión con Wompi muestra el mensaje y el carrito sigue guardado", async ({
+  test("COM-07-CP4 · sin conexión con la pasarela muestra el mensaje y el carrito sigue guardado", async ({
     page,
   }) => {
-    test.skip(hayLlaves, "Con llaves de prueba, Wompi sí responde.");
+    test.skip(hayLlaves, "Con credenciales de prueba, Mercado Pago sí responde.");
     await irAlResumen(page);
     const pagar = page.getByRole("main").getByRole("button", { name: "Pagar $ 161.700" });
     await expect(pagar).toBeEnabled();
@@ -34,15 +36,15 @@ test.describe("Crear pedido y redirigir al pago (ZTV-20)", () => {
     ).toHaveCount(1);
   });
 
-  test("COM-02-CP3 · «Pagar» lleva al Web Checkout de Wompi con $ 161.700", async ({ page }) => {
-    test.skip(!hayLlaves, "Requiere las llaves de prueba de Wompi (WOMPI_LLAVE_PUBLICA).");
+  test("COM-07-CP1 · «Pagar» lleva a la página de pago de Mercado Pago", async ({ page }) => {
+    test.skip(
+      !hayLlaves,
+      "Requiere las credenciales de prueba de Mercado Pago (MERCADOPAGO_ACCESS_TOKEN).",
+    );
     await irAlResumen(page);
     await page.getByRole("main").getByRole("button", { name: "Pagar $ 161.700" }).click();
-    await page.waitForURL(/checkout\.wompi\.co/);
-    const url = new URL(page.url());
-    expect(url.searchParams.get("amount-in-cents")).toBe("16170000");
-    expect(url.searchParams.get("currency")).toBe("COP");
-    expect(url.searchParams.get("reference")).toMatch(/^ZEN-\d{8}-[A-Z0-9]{5}$/);
+    await page.waitForURL(/mercadopago.com/);
+    expect(new URL(page.url()).searchParams.get("pref_id")).toBeTruthy();
   });
 
   test("el aviso de cambios del catálogo se muestra en el carrito", async ({ page }) => {

@@ -36,7 +36,7 @@ export default function PaginaPolitica() {
         <section>
           <h2 className="text-xl font-extrabold">Pagos</h2>
           <p className="mt-2">
-            Los pagos los procesa la pasarela Wompi. Zenda nunca ve ni guarda los datos de tu
+            Los pagos los procesa la pasarela Mercado Pago. Zenda nunca ve ni guarda los datos de tu
             tarjeta o de tu cuenta bancaria.
           </p>
         </section>

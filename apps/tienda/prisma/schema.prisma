@@ -90,7 +90,7 @@ enum EstadoPedido {
 /// ZTV-20: el pedido guarda una copia de todo lo que el cliente vio al tocar «Pagar» (RN2).
 model Pedido {
   id                 String        @id @default(cuid())
-  /// RN3: ZEN-AAAAMMDD-XXXXX. Es la referencia que se envía a Wompi.
+  /// RN3: ZEN-AAAAMMDD-XXXXX. Es la referencia externa que se envía a la pasarela.
   referencia         String        @unique
   /// Aleatorio: permite consultar el resultado sin exponer datos (ZTV-22).
   tokenAcceso        String        @unique
@@ -112,8 +112,8 @@ model Pedido {
   /// El carrito de origen; si el carrito se borra, el pedido se conserva.
   carritoId          String?
   carrito            Carrito?      @relation(fields: [carritoId], references: [id], onDelete: SetNull)
-  /// ZTV-21: datos del pago confirmado por Wompi (RN6).
-  wompiTransaccionId String?
+  /// ZTV-21 y ZTV-86: datos del pago confirmado por la pasarela (Mercado Pago, RN6).
+  pasarelaTransaccionId String?
   metodoPago         String?
   pagadoEn           DateTime?
   creadoEn           DateTime      @default(now())
@@ -191,10 +191,10 @@ model ImagenProducto {
 model EventoPago {
   id             String   @id @default(cuid())
   proveedor      String
-  /// Identificador de la transacción en Wompi.
+  /// Identificador del pago en la pasarela.
   transaccionId  String?
   referencia     String?
-  /// Estado que informó la pasarela (APPROVED, DECLINED…).
+  /// Estado que informó la pasarela (approved, rejected…).
   estado         String?
   recibidoEn     DateTime @default(now())
   /// Qué hizo Zenda con el aviso: pagado, rechazado, repetido, revision-monto, revision-stock…

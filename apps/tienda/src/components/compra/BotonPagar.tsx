@@ -9,7 +9,7 @@ import { formatearCOP } from "@/lib/formato";
 
 /**
  * «Pagar $ X» (ZTV-20). Crea el pedido en el servidor y lleva al cliente a la página de pago de
- * Wompi. Mientras procesa queda deshabilitado con «Procesando…» y se anuncia a los lectores de
+ * Mercado Pago. Mientras procesa queda deshabilitado con «Procesando…» y se anuncia a los lectores de
  * pantalla (escenario 4).
  */
 export function BotonPagar({ total }: { total: number }) {
