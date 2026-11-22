@@ -16,7 +16,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 2
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 2)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-21; v0.3.0)
 
 ### Historia
 Como visitante,
@@ -106,15 +106,15 @@ No aplica (el recordatorio de carrito abandonado es de E9).
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (el sprint arrancó sin aprobación previa por decisión del PO; aceptada en la review)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.3.0, PR #34)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.3.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-21)
 
 ---
 
@@ -127,7 +127,7 @@ No aplica (el recordatorio de carrito abandonado es de E9).
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 2
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 2)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-21; v0.3.0)
 
 ### Historia
 Como visitante,
@@ -212,15 +212,15 @@ Lee **Carrito**, **LineaCarrito**, **VarianteProducto**, **Producto** e **Imagen
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias resueltas (D3 y D4 aceptadas)
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (el sprint arrancó sin aprobación previa por decisión del PO; aceptada en la review)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.3.0, PR #34)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.3.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-21)
 
 ---
 
@@ -233,7 +233,7 @@ Lee **Carrito**, **LineaCarrito**, **VarianteProducto**, **Producto** e **Imagen
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 2
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 2)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-21; v0.3.0)
 
 ### Historia
 Como visitante,
@@ -313,12 +313,12 @@ Actualiza o elimina **LineaCarrito**; actualiza **Carrito.actualizadoEn**.
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (el sprint arrancó sin aprobación previa por decisión del PO; aceptada en la review)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.3.0, PR #34)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.3.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-21)
