@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@/generated/prisma/client";
+import { publicarPedidoPagado } from "../eventos/bandeja";
 import { MONEDA, type PagoPasarela } from "./mercadopago";
 
 /**
@@ -115,6 +116,8 @@ async function aplicar(tx: Tx, pago: PagoPasarela, ahora: Date): Promise<Resulta
   });
   if (pedido.carritoId)
     await tx.lineaCarrito.deleteMany({ where: { carritoId: pedido.carritoId } });
+  // ZTV-25 (RN1): el evento «pedido.pagado» queda en la bandeja de salida en esta misma transacción.
+  await publicarPedidoPagado(tx, pedido.id, ahora);
   return "pagado";
 }
 
