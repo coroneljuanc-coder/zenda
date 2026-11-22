@@ -30,7 +30,10 @@ test.describe("Ver el carrito (ZTV-17)", () => {
     await expect(lineas.nth(1).locator('[data-prueba="total-linea"]')).toHaveText("$ 89.900");
 
     await expect(page.locator('[data-prueba="subtotal"]')).toHaveText("$ 189.700");
-    await expect(page.getByRole("button", { name: "Continuar con la compra" })).toBeEnabled();
+    await expect(page.getByRole("link", { name: "Continuar con la compra" })).toHaveAttribute(
+      "href",
+      "/compra",
+    );
     await expect(page.getByRole("link", { name: "Seguir comprando" })).toHaveAttribute("href", "/");
   });
 
@@ -46,7 +49,7 @@ test.describe("Ver el carrito (ZTV-17)", () => {
     await expect(page.locator('[data-prueba="mensaje-envio"]')).toHaveText(
       "Te faltan $ 10.300 para el envío gratis",
     );
-    await expect(page.getByRole("button", { name: "Continuar con la compra" })).toBeInViewport();
+    await expect(page.getByRole("link", { name: "Continuar con la compra" })).toBeInViewport();
     const anchoDocumento = await page.evaluate(() => document.documentElement.scrollWidth);
     expect(anchoDocumento).toBeLessThanOrEqual(page.viewportSize()?.width ?? 0);
   });
