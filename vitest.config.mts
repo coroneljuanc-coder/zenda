@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
@@ -5,6 +6,17 @@ import { defineConfig } from "vitest/config";
 const aliasTienda = {
   "@": fileURLToPath(new URL("./apps/tienda/src", import.meta.url)),
 };
+
+/** Base de Notificaciones para las pruebas: variable del CI o el .env.local del servicio. */
+function urlNotificaciones(): string {
+  if (process.env.NOTIFICACIONES_DATABASE_URL) return process.env.NOTIFICACIONES_DATABASE_URL;
+  const archivo = fileURLToPath(new URL("./apps/notificaciones/.env.local", import.meta.url));
+  if (!existsSync(archivo)) return "";
+  const linea = readFileSync(archivo, "utf8")
+    .split(/\r?\n/)
+    .find((l) => l.startsWith("DATABASE_URL="));
+  return linea ? linea.slice("DATABASE_URL=".length) : "";
+}
 
 /**
  * Pruebas unitarias y de integración (Vitest).
@@ -41,7 +53,21 @@ export default defineConfig({
         test: {
           name: "notificaciones",
           include: ["apps/notificaciones/src/**/*.test.ts"],
+          exclude: ["**/*.integracion.test.ts", "**/node_modules/**"],
           environment: "node",
+        },
+      },
+      {
+        // ZTV-91: base propia del servicio. La conexión sale de apps/notificaciones/.env.local en
+        // local y de NOTIFICACIONES_DATABASE_URL en el CI.
+        test: {
+          name: "notificaciones-integracion",
+          include: ["apps/notificaciones/src/**/*.integracion.test.ts"],
+          environment: "node",
+          fileParallelism: false,
+          testTimeout: 60_000,
+          hookTimeout: 60_000,
+          env: { DATABASE_URL: urlNotificaciones() },
         },
       },
     ],

@@ -42,6 +42,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://zenda:zenda@localhost:5432/zenda_ci
+      NOTIFICACIONES_DATABASE_URL: postgresql://zenda:zenda@localhost:5432/zenda_notificaciones_ci
 
     steps:
       - name: Descargar el código
@@ -121,7 +122,19 @@ jobs:
         run: npm run typecheck -w notificaciones
       - name: "Notificaciones: pruebas unitarias"
         if: steps.cambios.outputs.notificaciones == 'true'
-        run: npx vitest run --project notificaciones
+        run: npm run db:generar -w notificaciones && npx vitest run --project notificaciones
+      # ZTV-91: base propia del servicio, en el mismo PostgreSQL temporal pero separada de la tienda.
+      - name: "Notificaciones: migraciones de su base de datos"
+        if: steps.cambios.outputs.notificaciones == 'true'
+        env:
+          PGPASSWORD: zenda
+          DATABASE_URL: ${{ env.NOTIFICACIONES_DATABASE_URL }}
+        run: |
+          psql -h localhost -U zenda -d zenda_ci -c "CREATE DATABASE zenda_notificaciones_ci"
+          npm run db:aplicar -w notificaciones
+      - name: "Notificaciones: pruebas de integración (base de datos)"
+        if: steps.cambios.outputs.notificaciones == 'true'
+        run: npx vitest run --project notificaciones-integracion
       - name: "Notificaciones: compilación"
         if: steps.cambios.outputs.notificaciones == 'true'
         run: npm run build -w notificaciones

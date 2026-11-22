@@ -20,7 +20,13 @@ import pg from "pg";
 
 export const PUERTO = 54329;
 export const USUARIO = "zenda";
-export const BASES = ["zenda", "zenda_shadow"];
+// zenda_notificaciones: base propia del servicio de Notificaciones (ZTV-91).
+export const BASES = [
+  "zenda",
+  "zenda_shadow",
+  "zenda_notificaciones",
+  "zenda_notificaciones_shadow",
+];
 
 const raiz = join(import.meta.dirname, "..");
 const carpeta = join(raiz, ".bd-local");
