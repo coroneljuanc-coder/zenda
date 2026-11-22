@@ -1,6 +1,11 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { EsquemaEventoPedidoPagado, firmarEvento, verificarFirmaEvento } from "./eventos";
+import {
+  EsquemaEventoPedidoPagado,
+  firmarEvento,
+  huellaClave,
+  verificarFirmaEvento,
+} from "./eventos";
 import { EVENTO_EJEMPLO } from "./eventos-ejemplo";
 
 const SECRETO = "secreto_eventos_prueba";
@@ -49,5 +54,13 @@ describe("firma del evento (RN4 de ZTV-25)", () => {
     expect(verificarFirmaEvento(cuerpo, firmarEvento(cuerpo, SECRETO, hace4), SECRETO, AHORA)).toBe(
       "valida",
     );
+  });
+});
+
+describe("huella de la clave (diagnóstico)", () => {
+  it("8 caracteres, iguales para la misma clave y distintos para otra", () => {
+    expect(huellaClave(SECRETO)).toMatch(/^[0-9a-f]{8}$/);
+    expect(huellaClave(SECRETO)).toBe(huellaClave(SECRETO));
+    expect(huellaClave(SECRETO)).not.toBe(huellaClave("otra"));
   });
 });
