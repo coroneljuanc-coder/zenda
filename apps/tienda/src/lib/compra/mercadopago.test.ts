@@ -31,13 +31,20 @@ const respuesta = (status: number, cuerpo: unknown) =>
   (async () => new Response(JSON.stringify(cuerpo), { status })) as unknown as typeof fetch;
 
 describe("credenciales (RN1 de ZTV-86)", () => {
-  it("solo acepta credenciales de prueba TEST-", () => {
-    expect(leerConfigMercadoPago({ MERCADOPAGO_ACCESS_TOKEN: "TEST-abc" })).toEqual({
-      accessToken: "TEST-abc",
+  it("ZTV-89 · acepta el Access Token de prueba actual (APP_USR-) y el anterior (TEST-)", () => {
+    expect(leerConfigMercadoPago({ MERCADOPAGO_ACCESS_TOKEN: " APP_USR-123-abc " })).toEqual({
+      accessToken: "APP_USR-123-abc",
       urlApi: "https://api.mercadopago.com",
     });
-    expect(leerConfigMercadoPago({ MERCADOPAGO_ACCESS_TOKEN: "APP_USR-abc" })).toBeNull();
+    expect(leerConfigMercadoPago({ MERCADOPAGO_ACCESS_TOKEN: "TEST-abc" })?.accessToken).toBe(
+      "TEST-abc",
+    );
+  });
+
+  it("rechaza una credencial ausente o que no es de Mercado Pago", () => {
     expect(leerConfigMercadoPago({})).toBeNull();
+    expect(leerConfigMercadoPago({ MERCADOPAGO_ACCESS_TOKEN: "   " })).toBeNull();
+    expect(leerConfigMercadoPago({ MERCADOPAGO_ACCESS_TOKEN: "pub_test_abc" })).toBeNull();
   });
 });
 
@@ -151,7 +158,29 @@ describe("consulta del pago (RN3)", () => {
       monto: 161_700,
       moneda: "COP",
       metodo: "visa",
+      real: false,
     });
     expect(await consultarPago(config, "1", respuesta(404, {}))).toBeNull();
+  });
+});
+
+describe("pago real o de prueba (ZTV-89)", () => {
+  const pagoCon = (extra: object) =>
+    respuesta(200, {
+      id: 1,
+      status: "approved",
+      external_reference: "ZEN-20261122-7K3QD",
+      transaction_amount: 161_700,
+      currency_id: "COP",
+      ...extra,
+    });
+
+  it("marca como real un pago con live_mode true", async () => {
+    expect((await consultarPago(config, "1", pagoCon({ live_mode: true })))?.real).toBe(true);
+  });
+
+  it("un pago con live_mode false o sin el dato es de prueba", async () => {
+    expect((await consultarPago(config, "1", pagoCon({ live_mode: false })))?.real).toBe(false);
+    expect((await consultarPago(config, "1", pagoCon({})))?.real).toBe(false);
   });
 });

@@ -12,15 +12,20 @@ export const MONEDA = "COP";
 
 export type ConfigMercadoPago = { accessToken: string; urlApi: string };
 
+const PREFIJOS_TOKEN = ["TEST-", "APP_USR-"];
+
 /**
- * RN1: solo credenciales de prueba (`TEST-…`) mientras la tienda esté en pruebas. Devuelve `null`
- * si falta la credencial o no es de prueba.
+ * RN1 de ZTV-86, ajustada en ZTV-89: Mercado Pago entrega hoy las credenciales de prueba con el
+ * prefijo `APP_USR-` (antes `TEST-`), igual que las de producción, así que el prefijo ya no separa
+ * prueba de producción. Se aceptan ambos prefijos y la regla «solo pruebas» se protege al confirmar
+ * el pago: un pago real nunca queda «Pagado» (ver `procesarPago`). Devuelve `null` si falta la
+ * credencial o no tiene la forma de una de Mercado Pago.
  */
 export function leerConfigMercadoPago(
   entorno: Record<string, string | undefined> = process.env,
 ): ConfigMercadoPago | null {
   const accessToken = entorno.MERCADOPAGO_ACCESS_TOKEN?.trim();
-  if (!accessToken || !accessToken.startsWith("TEST-")) return null;
+  if (!accessToken || !PREFIJOS_TOKEN.some((p) => accessToken.startsWith(p))) return null;
   return { accessToken, urlApi: entorno.MERCADOPAGO_URL_API?.trim() || URL_API };
 }
 
@@ -173,6 +178,8 @@ export type PagoPasarela = {
   monto: number;
   moneda: string;
   metodo: string | null;
+  /** `true` si Mercado Pago dice que es un pago real (`live_mode`), no de prueba. */
+  real: boolean;
 };
 
 const RespuestaPago = z.object({
@@ -182,6 +189,7 @@ const RespuestaPago = z.object({
   transaction_amount: z.number(),
   currency_id: z.string(),
   payment_method_id: z.string().nullable().optional(),
+  live_mode: z.boolean().optional(),
 });
 
 export function traducirEstado(estado: string): EstadoPasarela {
@@ -219,6 +227,7 @@ export async function consultarPago(
       monto: r.data.transaction_amount,
       moneda: r.data.currency_id,
       metodo: r.data.payment_method_id ?? null,
+      real: r.data.live_mode === true,
     };
   } catch {
     return null;

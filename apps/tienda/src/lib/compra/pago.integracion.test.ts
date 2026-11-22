@@ -39,6 +39,7 @@ function pago(referencia: string, estado: EstadoPasarela, monto = 111_800): Pago
     monto,
     moneda: "COP",
     metodo: "visa",
+    real: false,
   };
 }
 
@@ -113,6 +114,16 @@ describe("confirmar el pago (ZTV-21 con Mercado Pago)", () => {
     expect(await procesarPago(bd, pago(referencia, "aprobado"))).toBe("revision-stock");
     expect((await pedido()).estado).toBe("REQUIERE_REVISION");
     expect(await stockDe(varianteId)).toBe(1);
+  });
+
+  it("ZTV-89 · un pago real aprobado queda en REQUIERE_REVISION, sin tocar stock ni carrito", async () => {
+    const { varianteId, referencia } = await pedidoPendiente();
+    const real = { ...pago(referencia, "aprobado"), real: true };
+    expect(await procesarPago(bd, real)).toBe("revision-pago-real");
+    expect((await pedido()).estado).toBe("REQUIERE_REVISION");
+    expect(await stockDe(varianteId)).toBe(15);
+    expect(await bd.lineaCarrito.count()).toBe(1);
+    expect((await bd.eventoPago.findFirstOrThrow()).resultado).toBe("revision-pago-real");
   });
 
   it("RN5 · un pedido PAGADO no vuelve a rechazado", async () => {
