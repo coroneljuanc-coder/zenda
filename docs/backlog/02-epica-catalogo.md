@@ -521,7 +521,7 @@ No aplica.
 **Prioridad (MoSCoW):** Should
 **Estimación:** 3
 **Sprint:** 4 (salió del Sprint 2 en la planeación del 2026-11-20 por capacidad)
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 4)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-23; v1.0.0)
 
 ### Historia
 Como visitante,
@@ -605,15 +605,15 @@ Lee **Producto** (nombre, descripcion, activo).
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-23)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v1.0.0, PR #54)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v1.0.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-23)
 
 ---
 

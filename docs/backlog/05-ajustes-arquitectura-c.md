@@ -123,7 +123,7 @@ No aplica (las bases de datos se crean en ZTV-7 para la tienda y en COM-06 para 
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 4
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-23; v1.0.0)
 
 ### Historia
 Como vendedor de Zenda,
@@ -212,12 +212,12 @@ No aplica (esta historia transporta el aviso; los correos los define ZTV-23).
 - [x] Aprobada por el Product Owner (2026-11-15)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence (contrato del evento)
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v1.0.0, PR #54)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v1.0.0)
+- [x] Documentado en Confluence (contrato del evento)
+- [x] Aceptado por el Product Owner (2026-11-23)
 
 ---
 

@@ -363,7 +363,7 @@ No aplica (sin pantalla para el cliente; el resultado se ve en COM-04).
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 4
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-23; v1.0.0)
 
 ### Historia
 Como cliente,
@@ -446,15 +446,15 @@ Lee **Pedido** y **LineaPedido**; puede actualizar **Pedido** mediante la consul
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-23)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v1.0.0, PR #54)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v1.0.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-23)
 
 ---
 
@@ -467,7 +467,7 @@ Lee **Pedido** y **LineaPedido**; puede actualizar **Pedido** mediante la consul
 **Prioridad (MoSCoW):** Must
 **Estimación:** 3
 **Sprint:** 4
-**Estado:** Por hacer
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-23; v1.0.0)
 
 ### Historia
 Como cliente,
@@ -557,15 +557,15 @@ Escenario 4: Sin duplicados (alterno)
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas (cuenta Resend; limitación de dominio)
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-23)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v1.0.0, PR #54)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v1.0.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-23)
 
 ---
 
