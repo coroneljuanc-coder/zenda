@@ -9,3 +9,5 @@ CLAUDE.md
 *.drawio
 apps/tienda/src/generated
 apps/tienda/prisma/migrations
+apps/notificaciones/src/generated
+apps/notificaciones/prisma/migrations

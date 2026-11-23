@@ -15,7 +15,9 @@ export function Paginacion({
   ruta?: string;
 }) {
   if (totalPaginas <= 1) return null;
-  const enlace = (n: number) => (n <= 1 ? ruta : `${ruta}?pagina=${n}`);
+  // La búsqueda (ZTV-14) ya trae «?q=…» en la ruta: la página se agrega con «&».
+  const enlace = (n: number) =>
+    n <= 1 ? ruta : `${ruta}${ruta.includes("?") ? "&" : "?"}pagina=${n}`;
   const estiloEnlace = "flex min-h-11 items-center px-3 underline underline-offset-4";
   const estiloInactivo = "flex min-h-11 items-center px-3 text-gris";
 

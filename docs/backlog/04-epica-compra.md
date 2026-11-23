@@ -24,7 +24,7 @@
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 Como visitante,
@@ -117,15 +117,15 @@ No aplica.
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias resueltas (D2, D3 y D4 aceptadas)
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-22)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-22)
 
 ---
 
@@ -138,7 +138,7 @@ No aplica.
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 Como visitante,
@@ -226,16 +226,16 @@ No aplica (el correo se envía solo con el pago aprobado, COM-05).
 - [x] Criterios de aceptación completos (4 escenarios)
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
-- [ ] Dependencias resueltas (D1 aceptada; falta la cuenta sandbox de Wompi)
-- [ ] Aprobada por el Product Owner
+- [x] Dependencias resueltas (D1 actualizada: Mercado Pago, ZTV-86)
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-22)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-22)
 
 ---
 
@@ -248,7 +248,7 @@ No aplica (el correo se envía solo con el pago aprobado, COM-05).
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 Como vendedor de Zenda,
@@ -342,15 +342,15 @@ No aplica (sin pantalla para el cliente; el resultado se ve en COM-04).
 - [x] Reglas de negocio definidas
 - [x] Estimada en 8 puntos o menos
 - [x] Dependencias identificadas
-- [ ] Aprobada por el Product Owner
+- [x] Aprobada por el Product Owner (aceptada en la Sprint Review del 2026-11-22)
 
 ### Definición de Terminado (DoD)
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
-- [ ] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
+- [x] Documentado en Confluence
+- [x] Aceptado por el Product Owner (2026-11-22)
 
 ---
 
@@ -367,16 +367,16 @@ No aplica (sin pantalla para el cliente; el resultado se ve en COM-04).
 
 ### Historia
 Como cliente,
-quiero ver claramente si mi pago fue aprobado, rechazado o sigue pendiente al volver de Wompi,
+quiero ver claramente si mi pago fue aprobado, rechazado o sigue pendiente al volver de Mercado Pago,
 para saber si mi compra quedó hecha o si debo intentarlo de nuevo.
 
 ### Contexto
-Después de pagar, Wompi devuelve al cliente a Zenda. Sin un mensaje claro, el cliente puede pagar dos veces o creer que compró cuando no fue así.
+Después de pagar, Mercado Pago (D1, desde ZTV-86) devuelve al cliente a Zenda. Sin un mensaje claro, el cliente puede pagar dos veces o creer que compró cuando no fue así.
 
 ### Criterios de aceptación
 Escenario 1: Pago aprobado (camino feliz)
   Dado que mi pedido quedó "Pagado"
-  Cuando Wompi me devuelve a Zenda
+  Cuando Mercado Pago me devuelve a Zenda
   Entonces veo "¡Gracias por tu compra, Ana!", "Tu pedido ZEN-20261115-7K3QD fue confirmado", el resumen de productos, el total pagado y la dirección de entrega, y el aviso "Te enviamos la confirmación a ana@ejemplo.com"
 
 Escenario 2: Pago pendiente (alterno)
@@ -396,7 +396,7 @@ Escenario 4: Enlace inválido (error)
 
 ### Reglas de negocio
 - RN1: La página solo muestra el pedido si la referencia **y** el token de acceso coinciden (protege los datos personales del cliente).
-- RN2: Si el pedido sigue "Pendiente de pago" pero Wompi devolvió un id de transacción, Zenda consulta el estado a la API de Wompi y lo actualiza, aplicando las mismas reglas de COM-03.
+- RN2: Si el pedido sigue "Pendiente de pago" pero Mercado Pago devolvió el id del pago (`payment_id`), Zenda consulta el pago a Mercado Pago con su credencial privada y lo actualiza con las mismas reglas de COM-03 (solo si el pago es de este pedido).
 - RN3: Si después de 2 minutos sigue pendiente, se muestra "Te avisaremos por correo cuando tu banco confirme el pago."
 - RN4: Se muestra el celular enmascarado (ej. "300 *** 4567").
 
@@ -427,15 +427,18 @@ Lee **Pedido** y **LineaPedido**; puede actualizar **Pedido** mediante la consul
 | ID caso | Escenario | Tipo | Datos de prueba | Resultado esperado |
 |---|---|---|---|---|
 | COM-04-CP1 | 1 | E2E | Pago sandbox con tarjeta aprobada | Mensaje de gracias y resumen correcto |
-| COM-04-CP2 | 2 | Integración | Pedido pendiente + respuesta de Wompi PENDING | Mensaje de espera y actualización automática |
+| COM-04-CP2 | 2 | Integración + E2E | Pedido pendiente + Mercado Pago responde pendiente | Sigue pendiente; mensaje de espera y "Esta página se actualiza sola." |
 | COM-04-CP3 | 3 | E2E | Pago sandbox con tarjeta rechazada | Mensaje de rechazo; "Intentar de nuevo" lleva al carrito con productos |
 | COM-04-CP4 | 4 | E2E | Referencia válida + token incorrecto | 404 sin datos |
 | COM-04-CP5 | 1 | Unitaria | `enmascararCelular("3001234567")` | "300 *** 4567" |
-| COM-04-CP6 | 2 | Integración | Webhook no recibido + API de Wompi APPROVED | El pedido pasa a PAGADO mediante el respaldo |
+| COM-04-CP6 | 2 | Integración | Aviso no recibido + Mercado Pago responde aprobado | El pedido pasa a PAGADO mediante el respaldo y queda el evento para los correos |
 
 ### Notas técnicas
-- Ruta `src/app/pedido/resultado/page.tsx`; consulta de respaldo a `GET /v1/transactions/{id}` de Wompi (sandbox).
-- La actualización automática se hace con un componente cliente con un intervalo limitado.
+- Ruta `src/app/pedido/resultado/page.tsx`; lógica en `lib/compra/resultado.ts` (`consultarResultado`, `enmascararCelular`, `idPagoDeRegreso`). Respaldo con `GET /v1/payments/{id}` de Mercado Pago y `procesarPago`; si deja el pedido pagado, entrega el evento de ZTV-25 con `after()`.
+- La actualización automática es el componente cliente `EsperaConfirmacion`: `router.refresh()` cada 5 s durante 2 min; luego muestra el mensaje de RN3.
+- Estados: PAGADO → gracias; PENDIENTE_PAGO → espera; PAGO_RECHAZADO o CANCELADO → "Intentar de nuevo"; REQUIERE_REVISION → "Estamos revisando tu pago. Te contactaremos pronto.".
+- Modo de pruebas: bajo "Te enviamos la confirmación a…" se aclara que por ahora los correos llegan al correo de la tienda (RN5 de COM-05).
+- La página se transmite por partes (Suspense): un enlace inválido muestra la página 404 de Zenda con código HTTP 200. Las E2E crean los pedidos directo en la base (`e2e/tienda/pedidos-bd.ts`).
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
@@ -500,6 +503,7 @@ Escenario 4: Sin duplicados (alterno)
 - RN2: Los montos del correo salen de los datos del evento (copia del pedido, RN2 de COM-02), no del catálogo actual.
 - RN3: El correo del vendedor (`CORREO_VENDEDOR`) y la llave de Resend viven solo en el servicio de Notificaciones.
 - RN4: Mientras Zenda esté en modo de pruebas, todo correo incluye: "Este es un pedido de prueba. No se realizó ningún cobro real."
+- RN5 (decisión del PO en la planeación del Sprint 4, 2026-11-22): mientras Zenda esté en modo de pruebas, **todos los correos llegan a `CORREO_VENDEDOR`** (el PO) y la confirmación dice a quién iba dirigida: "Para: ana@ejemplo.com (modo de pruebas)". Sin dominio propio verificado, Resend solo permite enviar al dueño de la cuenta. Cuando haya dominio y ventas reales, se activa `ZENDA_CORREOS_REALES=1`.
 
 ### Requisitos no funcionales
 - Seguridad: la llave de Resend es una variable de entorno; el correo no incluye datos de pago, solo el método (ej. "Tarjeta terminada en 4242" si Wompi lo informa).
@@ -537,11 +541,15 @@ Escenario 4: Sin duplicados (alterno)
 | COM-05-CP3 | 2 | Integración | Pedido PAGADO | Correo al `CORREO_VENDEDOR` con los datos de contacto |
 | COM-05-CP4 | 3 | Integración | Resend simulado que falla 3 veces | 3 intentos; estadoCorreo = FALLIDO; pedido sigue PAGADO |
 | COM-05-CP5 | 4 | Integración | Reprocesar APPROVED | Sin segundo envío |
-| COM-05-CP6 | 1 | Unitaria | Snapshot: 2 × $ 45.000 + 1 × $ 60.000, envío $ 12.000 | HTML y texto con "$ 90.000", "$ 60.000", envío "$ 12.000" y total "$ 162.000" |
+| COM-05-CP6 | 1 | Unitaria | Copia del pedido del seed (A8): 3 × Camiseta M / Negro a $ 49.900, envío $ 12.000 | HTML y texto con "3 × $ 49.900", "$ 149.700", envío "$ 12.000" y total "$ 161.700" |
+| COM-05-CP7 | RN5 | Integración | Modo de pruebas | Ambos correos van a `CORREO_VENDEDOR`; la confirmación dice "Para: ana@ejemplo.com (modo de pruebas)" |
 
 ### Notas técnicas
-- Plantillas con React Email; envío con el SDK de Resend.
-- El código vive en `apps/notificaciones`. El servicio responde "recibido" y envía después con `after()` de Next.js; si se necesitan reintentos con espera, se usan Vercel Workflows.
+- Plantillas en `apps/notificaciones/src/lib/correos/plantillas.ts` (HTML con tablas simples y texto plano, con los datos escapados). Se descartó React Email para no sumar dependencias.
+- Envío con la API de Resend por `fetch` (`POST https://api.resend.com/emails`), con `Idempotency-Key` por evento y tipo para que un reintento no duplique el correo. Remitente de pruebas `onboarding@resend.dev`.
+- El servicio responde "recibido" a la tienda y envía después con `after()` de Next.js: hasta 3 intentos, con 2 y 5 segundos de espera. Si fallan, el correo queda FALLIDO con `[ALERTA] Correo pendiente` en los registros.
+- Tabla `EnvioCorreo` con llave única evento + tipo (RN1, escenario 4); se reserva el envío con un cambio atómico, así dos procesos a la vez no duplican el correo.
+- Variables en `zenda-notificaciones`: `RESEND_API_KEY` y `CORREO_VENDEDOR` (las carga el PO); opcionales `CORREO_REMITENTE` y `ZENDA_CORREOS_REALES`.
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros
@@ -570,7 +578,7 @@ Escenario 4: Sin duplicados (alterno)
 **Prioridad (MoSCoW):** Must
 **Estimación:** 5
 **Sprint:** 3 (agregada en la Sprint Review del 2026-11-22)
-**Estado:** En pruebas (lista para la Sprint Review del Sprint 3)
+**Estado:** Hecho (aceptada por el PO en la Sprint Review del 2026-11-22; v0.4.0)
 
 ### Historia
 
@@ -674,9 +682,9 @@ No aplica (el correo es COM-05).
 
 ### Definición de Terminado (DoD)
 
-- [ ] Código en GitHub, revisado e integrado a `main`
-- [ ] Plan de pruebas de la historia ejecutado y casos aprobados
-- [ ] Pruebas automatizadas pasando en GitHub Actions
-- [ ] Desplegado en Vercel
+- [x] Código en GitHub, revisado e integrado a `desarrollo` y a `main` (v0.4.0, PR #46)
+- [x] Plan de pruebas de la historia ejecutado y casos aprobados
+- [x] Pruebas automatizadas pasando en GitHub Actions
+- [x] Desplegado en Vercel (producción con v0.4.0)
 - [x] Documentado en Confluence
-- [ ] Aceptado por el Product Owner
+- [x] Aceptado por el Product Owner (2026-11-22)

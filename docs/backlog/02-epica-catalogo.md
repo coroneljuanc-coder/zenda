@@ -520,8 +520,8 @@ No aplica.
 **Tipo:** Historia
 **Prioridad (MoSCoW):** Should
 **Estimación:** 3
-**Sprint:** Backlog (salió del Sprint 2 en la planeación del 2026-11-20 por capacidad)
-**Estado:** Por hacer
+**Sprint:** 4 (salió del Sprint 2 en la planeación del 2026-11-20 por capacidad)
+**Estado:** En pruebas (lista para la Sprint Review del Sprint 4)
 
 ### Historia
 Como visitante,
@@ -535,10 +535,10 @@ Con productos de todo tipo, navegar por categorías no siempre basta. La búsque
 Escenario 1: Búsqueda con resultados (camino feliz)
   Dado que existe el producto "Camiseta básica de algodón"
   Cuando escribo "camiseta" en el buscador y presiono Enter
-  Entonces voy a `/buscar?q=camiseta` y veo "3 resultados para «camiseta»" con los productos que coinciden
+  Entonces voy a `/buscar?q=camiseta` y veo "1 resultado para «camiseta»" con los productos que coinciden (datos del seed, A8)
 
 Escenario 2: Búsqueda sin tildes ni mayúsculas (alterno)
-  Dado el producto "Lámpara de mesa"
+  Dado el producto "Lámpara de escritorio LED" (seed)
   Cuando busco "LAMPARA"
   Entonces el producto aparece en los resultados
 
@@ -594,8 +594,10 @@ Lee **Producto** (nombre, descripcion, activo).
 | CAT-05-CP6 | 1 | Integración | `' OR 1=1 --` | Sin error; 0 resultados |
 
 ### Notas técnicas
-- Búsqueda en PostgreSQL con la extensión `unaccent` + `ILIKE` (suficiente para el MVP; se puede migrar a búsqueda de texto completo más adelante).
-- Validación del parámetro `q` con Zod.
+- `lib/catalogo/busqueda.ts`: `validarBusqueda` (RN3), `normalizar` (RN2) y `buscarProductos`. En PostgreSQL se usa `translate(lower(…))` con la tabla de tildes en lugar de la extensión `unaccent`, para no depender de extensiones (Neon, CI y la base local). `LIKE` con los comodines escapados y el texto como parámetro (CAT-05-CP6). Orden: coincidencia en el nombre, luego por fecha y nombre (RN4).
+- Página `/buscar` (sin indexar) que reutiliza la cuadrícula y la paginación del listado (RN5). La paginación agrega `&pagina=` cuando la ruta ya trae `?q=`.
+- Componente `Buscador` en el encabezado: a la vista en escritorio, con la lupa en celular; con menos de 2 caracteres no busca y muestra el mensaje (escenario 4). El contador se anuncia con `role="status"`.
+- Datos reales del seed (A8): «camiseta» da 1 resultado; «LAMPARA» encuentra «Lámpara de escritorio LED». Las pruebas de integración usan productos propios (CAT-05-CP2, CP5 y CP6).
 
 ### Definición de Listo (DoR)
 - [x] Historia y contexto claros

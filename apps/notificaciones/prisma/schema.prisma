@@ -1,0 +1,55 @@
+// Modelo de datos del servicio de Notificaciones (ZTV-91). Base propia, separada de la tienda
+// (arquitectura C, ADR-001; RN2 de ZTV-24).
+// - EventoRecibido: cada evento que llega de la tienda, una sola vez por id (RN3 de ZTV-25).
+// - EnvioCorreo: cada correo que el servicio envía o intenta enviar (ZTV-23), uno por evento y tipo.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model EventoRecibido {
+  /// Identificador del evento que asignó la tienda (UUID).
+  id         String        @id
+  tipo       String
+  version    Int
+  /// Fecha en que la tienda creó el evento.
+  ocurridoEn DateTime
+  recibidoEn DateTime      @default(now())
+  /// Datos del evento tal como llegaron (contrato de @zenda/contratos).
+  datos      Json
+  correos    EnvioCorreo[]
+}
+
+enum TipoCorreo {
+  CONFIRMACION_CLIENTE
+  AVISO_VENDEDOR
+}
+
+enum EstadoCorreo {
+  PENDIENTE
+  ENVIADO
+  FALLIDO
+}
+
+model EnvioCorreo {
+  id           String         @id @default(uuid())
+  eventoId     String
+  evento       EventoRecibido @relation(fields: [eventoId], references: [id], onDelete: Cascade)
+  tipo         TipoCorreo
+  /// Destinatario original (el del pedido o el del vendedor).
+  destinatario String
+  estado       EstadoCorreo   @default(PENDIENTE)
+  intentos     Int            @default(0)
+  ultimoError  String?
+  /// Identificador que devuelve el proveedor de correo (Resend).
+  proveedorId  String?
+  enviadoEn    DateTime?
+  creadoEn     DateTime       @default(now())
+
+  @@unique([eventoId, tipo])
+}

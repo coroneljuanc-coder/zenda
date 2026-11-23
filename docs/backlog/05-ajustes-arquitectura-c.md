@@ -248,3 +248,12 @@ No aplica (esta historia transporta el aviso; los correos los define ZTV-23).
 | 2 | ZTV-16 a ZTV-18 + ZTV-14 (+ ZTV-15 si alcanza) | 14 (19) |
 | 3 | ZTV-19 a ZTV-21 | 15 |
 | 4 | ZTV-22 + COM-06 + ZTV-23 | 11 |
+
+---
+
+### Implementación de COM-06 (ZTV-25, Sprint 4, 2026-11-22)
+- **Contrato** en `packages/contratos/src/eventos.ts`: esquema zod del evento `pedido.pagado` v1 (id UUID, tipo, versión, fecha y datos del pedido sin datos de pago) y firma HMAC-SHA256 en el encabezado `x-zenda-firma: t=<segundos>,v1=<hex>` sobre `<segundos>.<cuerpo>`, con tolerancia de 5 minutos.
+- **Tienda:** tabla `EventoSaliente` (bandeja de salida). `procesarPago` la llena en la misma transacción del pago (RN1, un evento por pedido). `entregarEventosPendientes` reserva con `FOR UPDATE SKIP LOCKED`, firma y envía; reintenta a 1, 5, 15 y 30 minutos y luego cada hora; a las 24 horas queda FALLIDO con alerta. Se dispara con `after()` del webhook de Mercado Pago y cada 15 minutos con la tarea programada de GitHub Actions `entregar-eventos.yml` (`POST /api/eventos/entregar`, sin datos en la respuesta).
+- **Notificaciones:** `POST /api/eventos` verifica la firma (401), el contrato (400) y registra el evento una sola vez (`EventoRecibido`, base propia de ZTV-91).
+- **Variables:** `ZENDA_SECRETO_EVENTOS` en ambos proyectos y `URL_NOTIFICACIONES` en la tienda.
+- Casos COM-06-CP1 a CP14 en las pruebas unitarias y de integración.

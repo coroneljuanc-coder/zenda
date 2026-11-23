@@ -202,3 +202,32 @@ model EventoPago {
 
   @@index([referencia])
 }
+
+// ZTV-25: bandeja de salida de eventos («outbox»). El evento se guarda en la misma transacción que
+// marca el pedido «Pagado» (RN1) y se entrega después al servicio de Notificaciones, con
+// reintentos; el pago nunca espera esa entrega (RN2).
+enum EstadoEvento {
+  PENDIENTE
+  ENTREGADO
+  FALLIDO
+}
+
+model EventoSaliente {
+  /// UUID del evento: el servicio de Notificaciones lo procesa una sola vez (RN3).
+  id             String       @id @default(uuid())
+  tipo           String
+  version        Int
+  /// Datos del evento según el contrato de @zenda/contratos.
+  datos          Json
+  ocurridoEn     DateTime     @default(now())
+  estado         EstadoEvento @default(PENDIENTE)
+  intentos       Int          @default(0)
+  /// Cuándo se puede volver a intentar; también sirve de «reserva» mientras un proceso lo entrega.
+  proximoIntento DateTime     @default(now())
+  entregadoEn    DateTime?
+  ultimoError    String?
+  /// Un evento «pedido.pagado» por pedido (RN1).
+  pedidoId       String?      @unique
+
+  @@index([estado, proximoIntento])
+}
